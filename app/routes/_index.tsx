@@ -1,7 +1,7 @@
 import { ArrowUpIcon } from '@radix-ui/react-icons';
 import type { MetaFunction } from '@remix-run/node';
 import { ChangeEvent, FormEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
-import { MessageList, PreDefinedList } from '~/components';
+import { MessagesContainer, PreDefinedList } from '~/components';
 import { Button } from '~/components/ui/button';
 import { Textarea } from '~/components/ui/textarea';
 import { cn } from '~/lib/utils';
@@ -21,15 +21,15 @@ export const meta: MetaFunction = () => {
 export default function Index() {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<MessageType[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     textareaRef.current?.focus();
   }, []);
 
-  const handleOnSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleOnSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(input);
     const newMessageFromUser: MessageType = {
       sessionId: '1',
       content: input,
@@ -39,6 +39,21 @@ export default function Index() {
     setMessages((prevMessages) => [...prevMessages, newMessageFromUser]);
     setInput('');
     textareaRef.current!.value = '';
+
+    setIsLoading(true);
+
+    await new Promise(() => {
+      setTimeout(() => {
+        setIsLoading(false);
+        const newMessageFromBot: MessageType = {
+          sessionId: '1',
+          content: 'Chào bạn, tôi là uitWiki Bot, tôi có thể giúp gì cho bạn?',
+          sender: 'bot',
+          timestamp: Date.now(),
+        };
+        setMessages((prevMessages) => [...prevMessages, newMessageFromBot]);
+      }, 3000);
+    });
   };
 
   const handleOnChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -49,7 +64,7 @@ export default function Index() {
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (input.trim() === '') return;
+    if (input.trim() === '' || isLoading) return;
 
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
@@ -58,16 +73,16 @@ export default function Index() {
   };
 
   return (
-    <main className="flex h-screen items-center justify-center">
-      <div className="container max-w-3xl">
+    <main className="container mx-auto h-screen">
+      <div className="relative mx-auto flex h-full w-full max-w-3xl flex-col items-center justify-center">
         {messages.length === 0 && (
           <h1 className="mb-6 text-center text-4xl font-semibold text-gray-900">Tôi có thể giúp gì cho bạn?</h1>
         )}
-        {messages.length !== 0 && <MessageList messages={messages} />}
+        {messages.length !== 0 && <MessagesContainer messages={messages} isLoading={isLoading} />}
         <form
           onSubmit={(e) => handleOnSubmit(e)}
-          className={cn('mb-3 flex flex-col gap-2 rounded-xl border p-2 px-3 pt-3 shadow-sm transition-all', {
-            'container fixed bottom-8 max-w-3xl': messages.length !== 0,
+          className={cn('mb-3 flex w-full flex-col gap-2 rounded-xl border p-2 px-3 pt-3 shadow-sm transition-all', {
+            'container fixed bottom-8 max-w-3xl bg-white': messages.length !== 0,
           })}
         >
           <Textarea
@@ -78,7 +93,7 @@ export default function Index() {
             className="max-h-[300px] min-h-[40px] resize-none overflow-auto border-none p-0 shadow-none outline-none focus-visible:ring-0"
           />
           <Button
-            disabled={input.trim() !== '' ? false : true}
+            disabled={input.trim() !== '' && isLoading === false ? false : true}
             type="submit"
             className="size-8 flex-grow-0 self-end rounded-lg p-2"
           >
@@ -86,7 +101,7 @@ export default function Index() {
           </Button>
         </form>
         {messages.length === 0 && <PreDefinedList />}
-        <div className="container fixed bottom-0 max-w-3xl">
+        <div className="container fixed bottom-0 max-w-3xl bg-white">
           <p className="py-2 text-center text-xs text-gray-500">
             uitWiki có thể mắc lỗi. Vui lòng sử dụng một cách cẩn trọng.
           </p>

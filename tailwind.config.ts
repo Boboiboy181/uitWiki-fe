@@ -7,7 +7,7 @@ export default {
     extend: {
       fontFamily: {
         sans: [
-          '"Exo 2"',
+          '"Inter"',
           'ui-sans-serif',
           'system-ui',
           'sans-serif',

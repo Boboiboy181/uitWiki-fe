@@ -12,6 +12,6 @@ export default function PreDefinedList() {
 
 const predefinedQuestions = [
   { question: 'Bạn là ai?' },
-  { question: 'UIT là trường gì' },
+  { question: 'Cho tôi hỏi thêm về học phí UIT' },
   { question: 'Một học kỳ được đăng ký tối đa bao nhiêu tín chỉ?' },
 ];

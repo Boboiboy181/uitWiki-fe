@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 export default function Message({ message, typing = false }: { message?: MessageType; typing?: boolean }) {
   return (
-    <div className={cn('flex items-center gap-2 py-3', message?.sender === 'user' && 'flex-row-reverse')}>
+    <div className={cn('flex items-start gap-2 py-3', message?.sender === 'user' && 'flex-row-reverse')}>
       <Avatar>
         <AvatarImage
           src={
@@ -30,7 +30,14 @@ export default function Message({ message, typing = false }: { message?: Message
           className="animate-pulse"
         />
       ) : (
-        <p className="relative top-3 rounded-xl bg-gray-200 p-3.5 py-3 text-sm transition-all">{message?.content}</p>
+        <p
+          className={cn(
+            'relative top-3 max-w-[500px] rounded-xl p-3.5 py-3 text-sm transition-all',
+            message?.sender === 'user' ? 'bg-gray-200' : 'bg-blue-200',
+          )}
+        >
+          {message?.content}
+        </p>
       )}
     </div>
   );

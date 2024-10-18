@@ -8,7 +8,7 @@ type MessagesContainerProps = {
 
 export default function MessagesContainer({ messages, isLoading }: MessagesContainerProps) {
   return (
-    <div className="absolute top-0 h-fit w-full pt-4">
+    <div className="flex h-fit w-full max-w-3xl flex-col pt-4">
       {messages.map((message, index) => (
         <Message key={index} message={message} />
       ))}

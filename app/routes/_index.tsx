@@ -77,10 +77,10 @@ export default function Index() {
   };
 
   return (
-    <main className="container mx-auto h-screen">
+    <main className="mx-auto h-screen">
       <div
         className={cn('relative mx-auto flex h-full w-full flex-col items-center justify-center', {
-          'justify-between gap-16': messages.length !== 0,
+          'justify-between overflow-y-auto': messages.length !== 0,
         })}
       >
         {messages.length === 0 && (

@@ -1,10 +1,13 @@
 import Lottie from 'lottie-react';
+import ReactMarkdown from 'react-markdown';
 import typingAnimation from '~/assets/lottie/typing.json';
 import { cn } from '~/lib/utils';
 import { MessageType } from '~/types';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 export default function Message({ message, typing = false }: { message?: MessageType; typing?: boolean }) {
+  const ContentComponent = message?.sender === 'user' ? 'p' : ReactMarkdown;
+
   return (
     <div className={cn('flex items-start gap-2 py-3', message?.sender === 'user' && 'flex-row-reverse')}>
       <Avatar>
@@ -30,14 +33,26 @@ export default function Message({ message, typing = false }: { message?: Message
           className="animate-pulse"
         />
       ) : (
-        <p
+        <div
           className={cn(
-            'relative top-3 max-w-[500px] rounded-xl p-3.5 py-3 text-sm transition-all',
-            message?.sender === 'user' ? 'bg-gray-200' : 'bg-blue-200',
+            'relative rounded-xl p-1.5 py-3 text-sm transition-all',
+            message?.sender === 'user' && 'top-3 max-w-[500px] bg-gray-200 p-3.5',
           )}
         >
-          {message?.content}
-        </p>
+          <ContentComponent
+            components={{
+              a: ({ href, children }) => (
+                <a href={href} className="font-semibold text-blue-600 underline">
+                  {children}
+                </a>
+              ),
+              ul: ({ children }) => <ul className="list-disc pl-5">{children}</ul>,
+              ol: ({ children }) => <ol className="list-decimal pl-5">{children}</ol>,
+            }}
+          >
+            {message?.content}
+          </ContentComponent>
+        </div>
       )}
     </div>
   );

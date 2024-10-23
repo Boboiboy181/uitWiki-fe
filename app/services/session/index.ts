@@ -9,4 +9,13 @@ const getNewSession = async () => {
   }
 };
 
-export { getNewSession };
+const getSessionById = async (sessionId: string) => {
+  try {
+    const response = await api.get(`/get_session?sessionId=${sessionId}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export { getNewSession, getSessionById };

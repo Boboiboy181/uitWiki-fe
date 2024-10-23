@@ -15,7 +15,7 @@ export default function Message({ message, typing = false }: { message?: Message
           src={
             message?.sender === 'user'
               ? 'https://github.com/shadcn.png'
-              : 'https://avatars.githubusercontent.com/u/109295079?v=4'
+              : 'https://avatars.githubusercontent.com/u/16943930?s=200&v=4'
           }
         />
         <AvatarFallback>

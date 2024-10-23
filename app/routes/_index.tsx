@@ -5,7 +5,9 @@ import { MessagesContainer, PreDefinedList } from '~/components';
 import { Button } from '~/components/ui/button';
 import { Textarea } from '~/components/ui/textarea';
 import { cn } from '~/lib/utils';
-import { sendMessage } from '~/services';
+import { getSessionById, sendMessage } from '~/services';
+import { useSession } from '~/store';
+import { useChat } from '~/store/chat.store';
 import { MessageType } from '~/types';
 
 export const meta: MetaFunction = () => {
@@ -21,38 +23,56 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<MessageType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const { sessionId, getNewSessionId, hasHydrated } = useSession();
+  const { messages, setMessages, addMessage } = useChat();
 
   useEffect(() => {
     textareaRef.current?.focus();
   }, []);
 
+  useEffect(() => {
+    if (!hasHydrated) {
+      return;
+    }
+
+    if (sessionId === '') {
+      getNewSessionId();
+      return;
+    }
+
+    const fetchMessages = async () => {
+      try {
+        const { messages } = await getSessionById(sessionId);
+        setMessages(messages);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchMessages();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasHydrated, sessionId]);
+
   const handleOnSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newMessageFromUser: MessageType = {
-      sessionId: '1',
       content: input,
       sender: 'user',
       timestamp: Date.now(),
     };
-    setMessages((prevMessages) => [...prevMessages, newMessageFromUser]);
+    addMessage(newMessageFromUser);
     setInput('');
     textareaRef.current!.value = '';
 
     setIsLoading(true);
 
     try {
-      const { chatbot_response } = await sendMessage(input);
-
-      const newMessageFromBot: MessageType = {
-        sessionId: '1',
-        content: chatbot_response,
-        sender: 'bot',
-        timestamp: Date.now(),
-      };
-      setMessages((prevMessages) => [...prevMessages, newMessageFromBot]);
+      const newMessageFromBot: MessageType = await sendMessage(input, sessionId, Date.now());
+      addMessage(newMessageFromBot);
     } catch (error) {
       console.error(error);
     } finally {

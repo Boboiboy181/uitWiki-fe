@@ -1,8 +1,6 @@
 import type { LinksFunction } from '@remix-run/node';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react';
 
-import { useEffect, useRef } from 'react';
-import { useSession } from './store';
 import './tailwind.css';
 
 export const links: LinksFunction = () => [
@@ -37,19 +35,5 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const { sessionId, getNewSessionId } = useSession();
-  const hasFetchedSession = useRef(false);
-
-  useEffect(() => {
-    if (!hasFetchedSession.current && !sessionId) {
-      hasFetchedSession.current = true;
-      const fetchSession = async () => {
-        await getNewSessionId();
-      };
-      fetchSession();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return <Outlet />;
 }

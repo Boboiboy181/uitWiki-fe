@@ -2,11 +2,13 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { getNewSession } from '~/services';
 
-interface SessionState {
+type SessionState = {
   sessionId: string;
   setSessionId: (sessionId: string) => void;
   getNewSessionId: () => Promise<void>;
-}
+  hasHydrated: boolean;
+  setHasHydrated: (state: boolean) => void;
+};
 
 const useSessionStore = create<SessionState>()(
   persist(
@@ -21,9 +23,14 @@ const useSessionStore = create<SessionState>()(
           console.error(error);
         }
       },
+      hasHydrated: false,
+      setHasHydrated: (state) => set({ hasHydrated: state }),
     }),
     {
       name: 'sessionId',
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true); // Mark as hydrated when rehydration is done
+      },
     },
   ),
 );

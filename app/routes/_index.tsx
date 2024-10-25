@@ -1,6 +1,9 @@
 import { ArrowUpIcon } from '@radix-ui/react-icons';
 import type { MetaFunction } from '@remix-run/node';
-import { ChangeEvent, FormEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import Lottie from 'lottie-react';
+import { ChangeEvent, FormEvent, Fragment, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import loadingAnimation from '~/assets/lottie/loading.json';
 import { MessagesContainer, PreDefinedList } from '~/components';
 import { Button } from '~/components/ui/button';
 import { Textarea } from '~/components/ui/textarea';
@@ -22,40 +25,83 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
+  const { messages, setMessages } = useChat();
+  const { sessionId, getNewSessionId, hasHydrated } = useSession();
+  const [localLoading, setLocalLoading] = useState(true);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['session', sessionId],
+    queryFn: () => getSessionById(sessionId),
+    enabled: !!sessionId,
+    select: (data) => data.messages,
+  });
+
+  useEffect(() => {
+    if (hasHydrated) {
+      if (sessionId === '') {
+        getNewSessionId();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasHydrated, sessionId]);
+
+  useEffect(() => {
+    if (data?.length > 0) {
+      setMessages(data);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
+  useEffect(() => {
+    setLocalLoading(isLoading);
+  }, [isLoading]);
+
+  return (
+    <main className="mx-auto h-screen">
+      <div
+        className={cn('relative mx-auto flex h-full w-full flex-col items-center justify-center', {
+          'justify-between overflow-y-auto': messages.length !== 0,
+        })}
+      >
+        {localLoading ? <Loading /> : <ChatContainer messages={messages} />}
+      </div>
+    </main>
+  );
+}
+
+function Loading() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return null;
+  }
+
+  return (
+    <Lottie
+      animationData={loadingAnimation}
+      loop={true}
+      style={{
+        height: 100,
+      }}
+    />
+  );
+}
+
+function ChatContainer({ messages }: { messages: MessageType[] }) {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const { sessionId, getNewSessionId, hasHydrated } = useSession();
-  const { messages, setMessages, addMessage } = useChat();
+  const { sessionId } = useSession();
+  const { addMessage } = useChat();
 
   useEffect(() => {
     textareaRef.current?.focus();
   }, []);
-
-  useEffect(() => {
-    if (!hasHydrated) {
-      return;
-    }
-
-    if (sessionId === '') {
-      getNewSessionId();
-      return;
-    }
-
-    const fetchMessages = async () => {
-      try {
-        const { messages } = await getSessionById(sessionId);
-        setMessages(messages);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchMessages();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasHydrated, sessionId]);
 
   const handleOnSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -97,46 +143,42 @@ export default function Index() {
   };
 
   return (
-    <main className="mx-auto h-screen">
+    <Fragment>
+      {messages.length === 0 ? (
+        <h1 className="mb-6 text-center text-4xl font-semibold text-gray-900">Tôi có thể giúp gì cho bạn?</h1>
+      ) : (
+        <MessagesContainer messages={messages} isLoading={isLoading} />
+      )}
+
       <div
-        className={cn('relative mx-auto flex h-full w-full flex-col items-center justify-center', {
-          'justify-between overflow-y-auto': messages.length !== 0,
+        className={cn('container w-full max-w-3xl bg-white', {
+          'sticky bottom-0': messages.length !== 0,
         })}
       >
-        {messages.length === 0 && (
-          <h1 className="mb-6 text-center text-4xl font-semibold text-gray-900">Tôi có thể giúp gì cho bạn?</h1>
-        )}
-        {messages.length !== 0 && <MessagesContainer messages={messages} isLoading={isLoading} />}
-        <div
-          className={cn('container w-full max-w-3xl bg-white', {
-            'sticky bottom-0': messages.length !== 0,
-          })}
+        <form
+          onSubmit={(e) => handleOnSubmit(e)}
+          className={cn('mb-3 flex w-full flex-col gap-2 rounded-xl border p-2 px-3 pt-3 shadow-sm transition-all')}
         >
-          <form
-            onSubmit={(e) => handleOnSubmit(e)}
-            className={cn('mb-3 flex w-full flex-col gap-2 rounded-xl border p-2 px-3 pt-3 shadow-sm transition-all')}
+          <Textarea
+            ref={textareaRef}
+            onChange={(e) => handleOnChange(e)}
+            onKeyDown={(e) => handleKeyDown(e)}
+            placeholder="Nhập câu hỏi ở đây?"
+            className="max-h-[300px] min-h-[40px] resize-none overflow-auto border-none p-0 shadow-none outline-none focus-visible:ring-0"
+          />
+          <Button
+            disabled={input.trim() !== '' && isLoading === false ? false : true}
+            type="submit"
+            className="size-8 flex-grow-0 self-end rounded-lg p-2"
           >
-            <Textarea
-              ref={textareaRef}
-              onChange={(e) => handleOnChange(e)}
-              onKeyDown={(e) => handleKeyDown(e)}
-              placeholder="Nhập câu hỏi ở đây?"
-              className="max-h-[300px] min-h-[40px] resize-none overflow-auto border-none p-0 shadow-none outline-none focus-visible:ring-0"
-            />
-            <Button
-              disabled={input.trim() !== '' && isLoading === false ? false : true}
-              type="submit"
-              className="size-8 flex-grow-0 self-end rounded-lg p-2"
-            >
-              <ArrowUpIcon />
-            </Button>
-          </form>
-          {messages.length === 0 && <PreDefinedList />}
-          <p className="mt-1 py-2 text-center text-xs text-gray-500">
-            uitWiki có thể mắc lỗi. Vui lòng sử dụng một cách cẩn trọng.
-          </p>
-        </div>
+            <ArrowUpIcon />
+          </Button>
+        </form>
+        {messages.length === 0 && <PreDefinedList />}
+        <p className="mt-1 py-2 text-center text-xs text-gray-500">
+          uitWiki có thể mắc lỗi. Vui lòng sử dụng một cách cẩn trọng.
+        </p>
       </div>
-    </main>
+    </Fragment>
   );
 }

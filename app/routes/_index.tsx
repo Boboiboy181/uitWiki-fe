@@ -1,9 +1,10 @@
-import { ArrowUpIcon } from '@radix-ui/react-icons';
+import { ArrowUpIcon, ExclamationTriangleIcon, ReloadIcon } from '@radix-ui/react-icons';
 import type { MetaFunction } from '@remix-run/node';
 import { useQuery } from '@tanstack/react-query';
 import Lottie from 'lottie-react';
 import { ChangeEvent, FormEvent, Fragment, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import loadingAnimation from '~/assets/lottie/loading.json';
+import uitLogo from '~/assets/svg/logo-uit.svg';
 import { MessagesContainer, PreDefinedList } from '~/components';
 import { Button } from '~/components/ui/button';
 import { Textarea } from '~/components/ui/textarea';
@@ -30,7 +31,7 @@ export default function Index() {
   const [localLoading, setLocalLoading] = useState(true);
 
   const { data, isLoading } = useQuery({
-    queryKey: ['session', sessionId],
+    queryKey: [sessionId],
     queryFn: () => getSessionById(sessionId),
     enabled: !!sessionId,
     select: (data) => data.messages,
@@ -46,9 +47,7 @@ export default function Index() {
   }, [hasHydrated, sessionId]);
 
   useEffect(() => {
-    if (data?.length > 0) {
-      setMessages(data);
-    }
+    setMessages(data || []);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
@@ -58,6 +57,7 @@ export default function Index() {
 
   return (
     <main className="mx-auto h-screen">
+      <Header />
       <div
         className={cn('relative mx-auto flex h-full w-full flex-col items-center justify-center', {
           'justify-between overflow-y-auto': messages.length !== 0,
@@ -94,6 +94,7 @@ function Loading() {
 function ChatContainer({ messages }: { messages: MessageType[] }) {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { sessionId } = useSession();
@@ -120,7 +121,7 @@ function ChatContainer({ messages }: { messages: MessageType[] }) {
       const newMessageFromBot: MessageType = await sendMessage(input, sessionId, Date.now());
       addMessage(newMessageFromBot);
     } catch (error) {
-      console.error(error);
+      setIsError(true);
     } finally {
       setIsLoading(false);
     }
@@ -142,6 +143,10 @@ function ChatContainer({ messages }: { messages: MessageType[] }) {
     }
   };
 
+  const handleReload = () => {
+    window.location.reload();
+  };
+
   return (
     <Fragment>
       {messages.length === 0 ? (
@@ -153,8 +158,32 @@ function ChatContainer({ messages }: { messages: MessageType[] }) {
       <div
         className={cn('container w-full max-w-3xl bg-white', {
           'sticky bottom-0': messages.length !== 0,
+          'pt-3': isError,
         })}
       >
+        <div
+          className={cn(
+            'mb-5 hidden flex-col items-center justify-center gap-2 opacity-0',
+            isError && 'flex opacity-100',
+          )}
+        >
+          <div className="flex items-center gap-4 rounded-md border border-red-700 bg-red-300 p-2 px-4">
+            <ExclamationTriangleIcon className="size-5" />
+            <p className="text-sm">
+              Đã xảy ra lỗi. Nếu vấn đề này vẫn tiếp diễn, vui lòng liên hệ với chúng mình qua email <br />
+              <a className="underline" href="mailto:21520806@gm.uit.edu.vn">
+                21520806@gm.uit.edu.vn
+              </a>{' '}
+              hoặc{' '}
+              <a className="underline" href="mailto:21520227@gm.uit.edu.vn">
+                21520227@gm.uit.edu.vn
+              </a>
+            </p>
+          </div>
+          <Button className="bg-[#4aa181] hover:bg-green-800" onClick={handleReload}>
+            Tải lại trang <ReloadIcon className="ml-1" />
+          </Button>
+        </div>
         <form
           onSubmit={(e) => handleOnSubmit(e)}
           className={cn('mb-3 flex w-full flex-col gap-2 rounded-xl border p-2 px-3 pt-3 shadow-sm transition-all')}
@@ -167,7 +196,7 @@ function ChatContainer({ messages }: { messages: MessageType[] }) {
             className="max-h-[300px] min-h-[40px] resize-none overflow-auto border-none p-0 shadow-none outline-none focus-visible:ring-0"
           />
           <Button
-            disabled={input.trim() !== '' && isLoading === false ? false : true}
+            disabled={input.trim() !== '' && isLoading === false && isError === false ? false : true}
             type="submit"
             className="size-8 flex-grow-0 self-end rounded-lg p-2"
           >
@@ -180,5 +209,24 @@ function ChatContainer({ messages }: { messages: MessageType[] }) {
         </p>
       </div>
     </Fragment>
+  );
+}
+
+function Header() {
+  const { setSessionId } = useSession();
+
+  const handleReload = () => {
+    setSessionId('');
+  };
+
+  return (
+    <header className="fixed left-0 top-0 z-10 w-full bg-white p-2 py-1">
+      <nav className="flex items-center justify-between">
+        <img className="size-12" src={uitLogo} alt="Trường Đại học Công nghệ Thông tin" />
+        <Button onClick={handleReload} className="bg-white text-black shadow-none hover:bg-gray-200">
+          <ReloadIcon />
+        </Button>
+      </nav>
+    </header>
   );
 }

@@ -1,5 +1,6 @@
-import { create } from 'zustand';
+import { create, StateCreator } from 'zustand';
 import { MessageType } from '~/types';
+import { logger } from './middleware';
 
 type ChatState = {
   messages: MessageType[];
@@ -7,10 +8,12 @@ type ChatState = {
   addMessage: (message: MessageType) => void;
 };
 
-const useChatStore = create<ChatState>((set) => ({
-  messages: [],
-  setMessages: (messages) => set({ messages }),
-  addMessage: (message) => set((state) => ({ messages: [...state.messages, message] })),
-}));
+const useChatStore = create<ChatState>()(
+  (process.env.NODE_ENV === 'development' ? logger : (fn: StateCreator<ChatState>) => fn)((set) => ({
+    messages: [],
+    setMessages: (messages: MessageType[]) => set({ messages }),
+    addMessage: (message: MessageType) => set((state) => ({ messages: [...state.messages, message] })),
+  })),
+);
 
 export const useChat = () => useChatStore((state) => state);

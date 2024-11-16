@@ -2,6 +2,7 @@ import { ArrowUpIcon, ExclamationTriangleIcon, ReloadIcon } from '@radix-ui/reac
 import type { MetaFunction } from '@remix-run/node';
 import { useQuery } from '@tanstack/react-query';
 import Lottie from 'lottie-react';
+import { useQueryState } from 'nuqs';
 import { ChangeEvent, FormEvent, Fragment, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import loadingAnimation from '~/assets/lottie/loading.json';
 import uitLogo from '~/assets/svg/logo-uit.svg';
@@ -29,6 +30,8 @@ export default function Index() {
   const { messages, setMessages } = useChat();
   const { sessionId, getNewSessionId, hasHydrated } = useSession();
   const [localLoading, setLocalLoading] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setQuerySessionId] = useQueryState('sessionId', { defaultValue: '' });
 
   const { data, isLoading } = useQuery({
     queryKey: [sessionId],
@@ -47,9 +50,12 @@ export default function Index() {
   }, [hasHydrated, sessionId]);
 
   useEffect(() => {
+    if (sessionId) {
+      setQuerySessionId(sessionId);
+    }
     setMessages(data || []);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [data, sessionId]);
 
   useEffect(() => {
     setLocalLoading(isLoading);
@@ -60,7 +66,7 @@ export default function Index() {
       <Header />
       <div
         className={cn('relative mx-auto flex h-full w-full flex-col items-center justify-center', {
-          'justify-between overflow-y-auto': messages.length !== 0,
+          'justify-between overflow-y-hidden': messages.length !== 0,
         })}
       >
         {localLoading ? <Loading /> : <ChatContainer messages={messages} />}
@@ -152,25 +158,24 @@ function ChatContainer({ messages }: { messages: MessageType[] }) {
       {messages.length === 0 ? (
         <h1 className="mb-6 text-center text-4xl font-semibold text-gray-900">Tôi có thể giúp gì cho bạn?</h1>
       ) : (
-        <MessagesContainer messages={messages} isLoading={isLoading} />
+        <MessagesContainer messages={messages} isLoading={isLoading} isError={isError} />
       )}
 
       <div
         className={cn('container w-full max-w-3xl bg-white', {
           'sticky bottom-0': messages.length !== 0,
-          'pt-3': isError,
         })}
       >
         <div
           className={cn(
-            'mb-5 hidden flex-col items-center justify-center gap-2 opacity-0',
+            'mb-5 hidden items-center justify-center gap-2 opacity-0 transition-all duration-300',
             isError && 'flex opacity-100',
           )}
         >
-          <div className="flex items-center gap-4 rounded-md border border-red-700 bg-red-300 p-2 px-4">
+          <div className="flex items-center gap-4 rounded-md border border-red-700 bg-red-200 p-2 px-4">
             <ExclamationTriangleIcon className="size-5" />
             <p className="text-sm">
-              Đã xảy ra lỗi. Nếu vấn đề này vẫn tiếp diễn, vui lòng liên hệ với chúng mình qua email <br />
+              Đã xảy ra lỗi. Nếu vấn đề này vẫn tiếp diễn, vui lòng liên hệ với tụi mình qua email <br />
               <a className="underline" href="mailto:21520806@gm.uit.edu.vn">
                 21520806@gm.uit.edu.vn
               </a>{' '}
@@ -180,8 +185,8 @@ function ChatContainer({ messages }: { messages: MessageType[] }) {
               </a>
             </p>
           </div>
-          <Button className="bg-[#4aa181] hover:bg-green-800" onClick={handleReload}>
-            Tải lại trang <ReloadIcon className="ml-1" />
+          <Button className="bg-green-700 hover:bg-green-800" onClick={handleReload}>
+            <ReloadIcon className="ml-1" />
           </Button>
         </div>
         <form

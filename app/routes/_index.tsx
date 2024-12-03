@@ -12,6 +12,10 @@ import { getSessionById, sendMessage } from '~/services';
 import { useSession } from '~/store';
 import { useChat } from '~/store/chat.store';
 import { MessageType } from '~/types';
+import loadingAnimation from '~/assets/lottie/loading.json';
+import dynamic from 'next/dynamic';
+
+const Lottie = dynamic(() => import('lottie-react'), { ssr: false });
 
 export const meta: MetaFunction = () => {
   return [
@@ -85,14 +89,13 @@ function Loading() {
   }
 
   return (
-    // <Lottie
-    //   animationData={loadingAnimation}
-    //   loop={true}
-    //   style={{
-    //     height: 100,
-    //   }}
-    // />
-    <p>Loading</p>
+    <Lottie
+      animationData={loadingAnimation}
+      loop={true}
+      style={{
+        height: 100,
+      }}
+    />
   );
 }
 

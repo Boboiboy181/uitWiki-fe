@@ -1,10 +1,8 @@
 import { ArrowUpIcon, ExclamationTriangleIcon, ReloadIcon } from '@radix-ui/react-icons';
 import type { MetaFunction } from '@remix-run/node';
 import { useQuery } from '@tanstack/react-query';
-import Lottie from 'lottie-react';
 import { useQueryState } from 'nuqs';
 import { ChangeEvent, FormEvent, Fragment, KeyboardEvent, useEffect, useRef, useState } from 'react';
-import loadingAnimation from '~/assets/lottie/loading.json';
 import uitLogo from '~/assets/svg/logo-uit.svg';
 import { MessagesContainer, PreDefinedList } from '~/components';
 import { Button } from '~/components/ui/button';
@@ -87,13 +85,14 @@ function Loading() {
   }
 
   return (
-    <Lottie
-      animationData={loadingAnimation}
-      loop={true}
-      style={{
-        height: 100,
-      }}
-    />
+    // <Lottie
+    //   animationData={loadingAnimation}
+    //   loop={true}
+    //   style={{
+    //     height: 100,
+    //   }}
+    // />
+    <p>Loading</p>
   );
 }
 

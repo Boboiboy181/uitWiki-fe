@@ -31,15 +31,16 @@
     }
   },
   "remixConfig": {
-    "appDirectory": "/Users/daogiahai/Documents/Dev/uitWiki-fe/app",
+    "appDirectory": "/Users/lap15737-local/Documents/Dev/kltn/uitWiki-fe/app",
     "basename": "/",
-    "buildDirectory": "/Users/daogiahai/Documents/Dev/uitWiki-fe/build",
+    "buildDirectory": "/Users/lap15737-local/Documents/Dev/kltn/uitWiki-fe/build",
     "future": {
       "v3_fetcherPersist": true,
       "v3_relativeSplatPath": true,
       "v3_throwAbortReason": true,
-      "unstable_singleFetch": false,
-      "unstable_lazyRouteDiscovery": false,
+      "v3_routeConfig": false,
+      "v3_singleFetch": false,
+      "v3_lazyRouteDiscovery": false,
       "unstable_optimizeDeps": false
     },
     "manifest": false,

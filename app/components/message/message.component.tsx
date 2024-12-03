@@ -1,6 +1,5 @@
-import Lottie from 'lottie-react';
 import ReactMarkdown from 'react-markdown';
-import typingAnimation from '~/assets/lottie/typing.json';
+// import typingAnimation from '~/assets/lottie/typing.json';
 import { cn } from '~/lib/utils';
 import { MessageType } from '~/types';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
@@ -24,14 +23,15 @@ export default function Message({ message, typing = false }: { message?: Message
       </Avatar>
 
       {typing ? (
-        <Lottie
-          animationData={typingAnimation}
-          loop={true}
-          style={{
-            height: 50,
-          }}
-          className="animate-pulse"
-        />
+        // <Lottie
+        //   animationData={typingAnimation}
+        //   loop={true}
+        //   style={{
+        //     height: 50,
+        //   }}
+        //   className="animate-pulse"
+        // />
+        <div className="h-5 w-5 animate-pulse rounded-full bg-gray-300" />
       ) : (
         <div
           className={cn(

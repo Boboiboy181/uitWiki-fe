@@ -1,9 +1,8 @@
 import type { MetaFunction } from '@remix-run/node';
 import { useQuery } from '@tanstack/react-query';
 import { useQueryState } from 'nuqs';
-import { useEffect, useState } from 'react';
-import { ClientOnly } from 'remix-utils/client-only';
-import { ChatContainer, Header, Loading } from '~/components';
+import { useEffect } from 'react';
+import { ChatContainer, Header } from '~/components';
 import { cn } from '~/lib/utils';
 import { getSessionById } from '~/services';
 import { useSession } from '~/store';
@@ -23,11 +22,10 @@ export const meta: MetaFunction = () => {
 export default function Index() {
   const { messages, setMessages } = useChat();
   const { sessionId, getNewSessionId, hasHydrated } = useSession();
-  const [localLoading, setLocalLoading] = useState(true);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setQuerySessionId] = useQueryState('sessionId', { defaultValue: '' });
 
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: [sessionId],
     queryFn: () => getSessionById(sessionId),
     enabled: !!sessionId,
@@ -51,10 +49,6 @@ export default function Index() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, sessionId]);
 
-  useEffect(() => {
-    setLocalLoading(isLoading);
-  }, [isLoading]);
-
   return (
     <main className="mx-auto h-screen">
       <Header />
@@ -63,11 +57,7 @@ export default function Index() {
           'justify-between overflow-y-hidden': messages.length !== 0,
         })}
       >
-        {localLoading ? (
-          <ClientOnly fallback={<p>Loading...</p>}>{() => <Loading />}</ClientOnly>
-        ) : (
-          <ChatContainer messages={messages} />
-        )}
+        <ChatContainer messages={messages} />
       </div>
     </main>
   );

@@ -2,7 +2,7 @@ import { ArrowUpIcon, ExclamationTriangleIcon, ReloadIcon } from '@radix-ui/reac
 import type { MetaFunction } from '@remix-run/node';
 import { useQuery } from '@tanstack/react-query';
 import { useQueryState } from 'nuqs';
-import { ChangeEvent, FormEvent, Fragment, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, FormEvent, Fragment, KeyboardEvent, useEffect, useRef, useState, lazy } from 'react';
 import uitLogo from '~/assets/svg/logo-uit.svg';
 import { MessagesContainer, PreDefinedList } from '~/components';
 import { Button } from '~/components/ui/button';
@@ -13,9 +13,8 @@ import { useSession } from '~/store';
 import { useChat } from '~/store/chat.store';
 import { MessageType } from '~/types';
 import loadingAnimation from '~/assets/lottie/loading.json';
-import dynamic from 'next/dynamic';
 
-const Lottie = dynamic(() => import('lottie-react'), { ssr: false });
+const Lottie = lazy(() => import('lottie-react'));
 
 export const meta: MetaFunction = () => {
   return [

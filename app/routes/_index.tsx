@@ -1,14 +1,13 @@
 import type { MetaFunction } from '@remix-run/node';
 import { useQuery } from '@tanstack/react-query';
 import { useQueryState } from 'nuqs';
-import { lazy, Suspense, useEffect, useState } from 'react';
-import { ChatContainer, Header } from '~/components';
+import { useEffect, useState } from 'react';
+import { ClientOnly } from 'remix-utils/client-only';
+import { ChatContainer, Header, Loading } from '~/components';
 import { cn } from '~/lib/utils';
 import { getSessionById } from '~/services';
 import { useSession } from '~/store';
 import { useChat } from '~/store/chat.store';
-
-const Loading = lazy(() => import('~/components').then((module) => ({ default: module.Loading })));
 
 export const meta: MetaFunction = () => {
   return [
@@ -65,9 +64,7 @@ export default function Index() {
         })}
       >
         {localLoading ? (
-          <Suspense fallback={<div>Loading component...</div>}>
-            <Loading />
-          </Suspense>
+          <ClientOnly fallback={<p>Loading...</p>}>{() => <Loading />}</ClientOnly>
         ) : (
           <ChatContainer messages={messages} />
         )}

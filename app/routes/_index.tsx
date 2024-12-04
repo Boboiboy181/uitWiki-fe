@@ -1,12 +1,14 @@
 import type { MetaFunction } from '@remix-run/node';
 import { useQuery } from '@tanstack/react-query';
 import { useQueryState } from 'nuqs';
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { ChatContainer, Header } from '~/components';
 import { cn } from '~/lib/utils';
 import { getSessionById } from '~/services';
 import { useSession } from '~/store';
 import { useChat } from '~/store/chat.store';
+
+const Loading = lazy(() => import('~/components').then((module) => ({ default: module.Loading })));
 
 export const meta: MetaFunction = () => {
   return [
@@ -22,10 +24,11 @@ export const meta: MetaFunction = () => {
 export default function Index() {
   const { messages, setMessages } = useChat();
   const { sessionId, getNewSessionId, hasHydrated } = useSession();
+  const [localLoading, setLocalLoading] = useState(true);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setQuerySessionId] = useQueryState('sessionId', { defaultValue: '' });
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: [sessionId],
     queryFn: () => getSessionById(sessionId),
     enabled: !!sessionId,
@@ -49,6 +52,10 @@ export default function Index() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, sessionId]);
 
+  useEffect(() => {
+    setLocalLoading(isLoading);
+  }, [isLoading]);
+
   return (
     <main className="mx-auto h-screen">
       <Header />
@@ -57,7 +64,13 @@ export default function Index() {
           'justify-between overflow-y-hidden': messages.length !== 0,
         })}
       >
-        <ChatContainer messages={messages} />
+        {localLoading ? (
+          <Suspense fallback={<div>Loading component...</div>}>
+            <Loading />
+          </Suspense>
+        ) : (
+          <ChatContainer messages={messages} />
+        )}
       </div>
     </main>
   );

@@ -1,8 +1,10 @@
+import { lazy, Suspense } from 'react';
 import ReactMarkdown from 'react-markdown';
-// import typingAnimation from '~/assets/lottie/typing.json';
 import { cn } from '~/lib/utils';
 import { MessageType } from '~/types';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+
+const Typing = lazy(() => import('~/components').then((module) => ({ default: module.Typing })));
 
 export default function Message({ message, typing = false }: { message?: MessageType; typing?: boolean }) {
   const ContentComponent = message?.sender === 'user' ? 'p' : ReactMarkdown;
@@ -23,15 +25,9 @@ export default function Message({ message, typing = false }: { message?: Message
       </Avatar>
 
       {typing ? (
-        // <Lottie
-        //   animationData={typingAnimation}
-        //   loop={true}
-        //   style={{
-        //     height: 50,
-        //   }}
-        //   className="animate-pulse"
-        // />
-        <div className="h-5 w-5 animate-pulse rounded-full bg-gray-300" />
+        <Suspense fallback={<p>Typing...</p>}>
+          <Typing />
+        </Suspense>
       ) : (
         <div
           className={cn(

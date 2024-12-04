@@ -1,15 +1,12 @@
 import type { MetaFunction } from '@remix-run/node';
 import { useQuery } from '@tanstack/react-query';
 import { useQueryState } from 'nuqs';
-import { lazy, Suspense, useEffect, useState } from 'react';
-import { ChatContainer, Header } from '~/components';
-import { useIsClient } from '~/hooks';
+import { useEffect, useState } from 'react';
+import { ChatContainer, Header, Loading } from '~/components';
 import { cn } from '~/lib/utils';
 import { getSessionById } from '~/services';
 import { useSession } from '~/store';
 import { useChat } from '~/store/chat.store';
-
-const Loading = lazy(() => import('~/components').then((module) => ({ default: module.Loading })));
 
 export const meta: MetaFunction = () => {
   return [
@@ -26,7 +23,6 @@ export default function Index() {
   const { messages, setMessages } = useChat();
   const { sessionId, getNewSessionId, hasHydrated } = useSession();
   const [localLoading, setLocalLoading] = useState(true);
-  const isClient = useIsClient();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setQuerySessionId] = useQueryState('sessionId', { defaultValue: '' });
 
@@ -66,17 +62,7 @@ export default function Index() {
           'justify-between overflow-y-hidden': messages.length !== 0,
         })}
       >
-        {localLoading ? (
-          isClient ? (
-            <Suspense fallback={<div>Loading...</div>}>
-              <Loading />
-            </Suspense>
-          ) : (
-            <div>Loading...</div> // Server-side fallback
-          )
-        ) : (
-          <ChatContainer messages={messages} />
-        )}
+        {localLoading ? <Loading /> : <ChatContainer messages={messages} />}
       </div>
     </main>
   );

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useQueryState } from 'nuqs';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { ChatContainer, Header } from '~/components';
+import { useIsClient } from '~/hooks';
 import { cn } from '~/lib/utils';
 import { getSessionById } from '~/services';
 import { useSession } from '~/store';
@@ -25,6 +26,7 @@ export default function Index() {
   const { messages, setMessages } = useChat();
   const { sessionId, getNewSessionId, hasHydrated } = useSession();
   const [localLoading, setLocalLoading] = useState(true);
+  const isClient = useIsClient();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setQuerySessionId] = useQueryState('sessionId', { defaultValue: '' });
 
@@ -65,9 +67,13 @@ export default function Index() {
         })}
       >
         {localLoading ? (
-          <Suspense fallback={<div>Loading component...</div>}>
-            <Loading />
-          </Suspense>
+          isClient ? (
+            <Suspense fallback={<div>Loading...</div>}>
+              <Loading />
+            </Suspense>
+          ) : (
+            <div>Loading...</div> // Server-side fallback
+          )
         ) : (
           <ChatContainer messages={messages} />
         )}

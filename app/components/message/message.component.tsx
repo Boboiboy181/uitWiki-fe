@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { useIsClient } from '~/hooks';
 import { cn } from '~/lib/utils';
 import { MessageType } from '~/types';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
@@ -9,6 +10,7 @@ const Typing = lazy(() => import('~/components').then((module) => ({ default: mo
 
 export default function Message({ message, typing = false }: { message?: MessageType; typing?: boolean }) {
   const ContentComponent = message?.sender === 'user' ? 'p' : ReactMarkdown;
+  const isClient = useIsClient();
 
   return (
     <div className={cn('flex items-start gap-2 py-3', message?.sender === 'user' && 'flex-row-reverse')}>
@@ -26,9 +28,13 @@ export default function Message({ message, typing = false }: { message?: Message
       </Avatar>
 
       {typing ? (
-        <Suspense fallback={<p>Typing...</p>}>
-          <Typing />
-        </Suspense>
+        isClient ? (
+          <Suspense fallback={<div>Typing...</div>}>
+            <Typing />
+          </Suspense>
+        ) : (
+          <div>Typing...</div> // Server-side fallback
+        )
       ) : (
         <div
           className={cn(

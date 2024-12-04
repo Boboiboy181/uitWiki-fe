@@ -5,7 +5,6 @@ import { cn } from '~/lib/utils';
 import { MessageType } from '~/types';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
-// test lazy loading
 const Typing = lazy(() => import('~/components').then((module) => ({ default: module.Typing })));
 
 export default function Message({ message, typing = false }: { message?: MessageType; typing?: boolean }) {

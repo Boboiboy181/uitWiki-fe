@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionFunctionArgs } from '@remix-run/node';
-import { redirect } from '@remix-run/react';
+import { redirect, useFetcher } from '@remix-run/react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
@@ -9,6 +10,19 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '~/components/ui/input';
 import { login } from '~/services';
 import { commitSession, getSession } from '~/session';
+import { useUser } from '~/store';
+import { User } from '~/types';
+
+export async function loader({ request }: { request: Request }) {
+  const cookieHeader = request.headers.get('Cookie');
+  const session = await getSession(cookieHeader);
+
+  if (session.data.Authentication) {
+    return redirect('/dashboard');
+  }
+
+  return null;
+}
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -20,7 +34,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
   const response = await login(email, password);
-  const token = response.token;
+  const { token, user } = response;
 
   if (!token) {
     return { error: 'Login failed' };
@@ -29,14 +43,23 @@ export async function action({ request }: ActionFunctionArgs) {
   const session = await getSession();
   session.set('Authentication', token);
 
-  return redirect('/dashboard', {
-    headers: {
-      'Set-Cookie': await commitSession(session),
-    },
-  });
+  return Response.json({ user }, { headers: { 'Set-Cookie': await commitSession(session) } });
 }
 
 export default function Login() {
+  const { setUser } = useUser();
+
+  const fetcher = useFetcher({
+    key: 'login',
+  });
+
+  useEffect(() => {
+    if (fetcher.state === 'loading' && fetcher.data) {
+      const data = fetcher.data as { user: User };
+      setUser(data.user);
+    }
+  }, [fetcher.state, setUser, fetcher.data]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,7 +77,7 @@ export default function Login() {
       <div className="mb-10 flex w-[350px] flex-col items-center justify-center gap-4">
         <h1 className="text-center text-3xl font-semibold">Welcome Back</h1>
         <Form {...form}>
-          <form method="post" action="/login" className="flex w-full flex-col gap-3">
+          <fetcher.Form method="post" action="/login" className="flex w-full flex-col gap-3">
             <FormField
               control={form.control}
               name="email"
@@ -84,7 +107,7 @@ export default function Login() {
             <Button type="submit" variant={'default'} className="w-full bg-primary">
               Login
             </Button>
-          </form>
+          </fetcher.Form>
         </Form>
       </div>
       <p className="absolute bottom-4 text-sm">

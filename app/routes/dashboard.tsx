@@ -1,8 +1,18 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
+import { AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { ChatBubbleIcon, FileIcon } from '@radix-ui/react-icons';
+import { Separator } from '@radix-ui/react-separator';
 import { redirect } from '@remix-run/node';
 import { Link, Outlet, useLocation } from '@remix-run/react';
 import uitLogo from '~/assets/svg/logo-uit.svg';
+import { Avatar } from '~/components/ui/avatar';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '~/components/ui/breadcrumb';
 import {
   Sidebar,
   SidebarContent,
@@ -17,6 +27,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '~/components/ui/sidebar';
+import { cn } from '~/lib/utils';
 import { getSession } from '~/session';
 import { useUser } from '~/store';
 
@@ -56,9 +67,9 @@ export default function Dashboard() {
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <Link to="/dashboard" className="h-fit">
-                  <div className="flex h-fit items-center gap-2">
-                    <img className="size-12" src={uitLogo} alt="Trường Đại học Công nghệ Thông tin" />
-                    <div className="flex flex-1 flex-col">
+                  <div className="flex h-full w-full items-center gap-2">
+                    <img className="w-full max-w-12" src={uitLogo} alt="Trường Đại học Công nghệ Thông tin" />
+                    <div className="flex w-full flex-col">
                       <p className="font-semibold">uitWiki Chatbot</p>
                       <p>v1.0.0</p>
                     </div>
@@ -87,21 +98,26 @@ export default function Dashboard() {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter>
-          <SidebarMenuButton
-            size="lg"
-            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-          >
-            <div className="size-8 overflow-hidden rounded-full">
-              <Avatar className="size-8 rounded-full">
-                <AvatarImage src={'https://github.com/shadcn.png'} alt={'Hai'} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-              </Avatar>
-            </div>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{user.email}</span>
-              <span className="truncate text-xs">{user.roles}</span>
-            </div>
-          </SidebarMenuButton>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <div className="flex h-full w-full items-center gap-2">
+                  <Avatar className="h-full w-fit rounded-lg">
+                    <AvatarImage
+                      className="w-full max-w-12 rounded-lg"
+                      src={'https://github.com/shadcn.png'}
+                      alt={user.email}
+                    />
+                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  </Avatar>
+                  <div className="flex w-full flex-col">
+                    <p className="font-semibold">{user.email}</p>
+                    <p>{user.roles}</p>
+                  </div>
+                </div>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
@@ -111,6 +127,20 @@ export default function Dashboard() {
         >
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="#" asChild>
+                    <Link to={'/dashboard'}>Home</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className={cn('hidden md:block', pathname === '/dashboard' && 'md:hidden')} />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>{items.find((item) => item.url === pathname)?.title}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
           </div>
         </header>
         <div className="flex flex-1 flex-col p-4 pt-0">

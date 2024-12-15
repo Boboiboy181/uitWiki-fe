@@ -1,7 +1,5 @@
-export default function DashboardDocument() {
-  return (
-    <div>
-      <h1>Dashboard Document</h1>
-    </div>
-  );
+import { Outlet } from '@remix-run/react';
+
+export default function DashoardDocument() {
+  return <Outlet />;
 }

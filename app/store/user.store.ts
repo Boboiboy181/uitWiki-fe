@@ -5,11 +5,15 @@ import { User } from '~/types';
 type UserState = {
   user: User;
   setUser: (messages: User) => void;
+  token: string;
+  setToken: (token: string) => void;
 };
 
 const useUserStore = create<UserState>()(
   persist(
     (set) => ({
+      token: '',
+      setToken: (token: string) => set({ token }),
       user: {} as User,
       setUser: (user: User) => set({ user }),
     }),

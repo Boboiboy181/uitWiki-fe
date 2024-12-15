@@ -103,6 +103,12 @@ export default function DashboardIndex() {
           </CardContent>
         </Card>
       </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Thời gian cập nhật mới nhất</CardTitle>
+        </CardHeader>
+        <CardContent>Ngày {new Date().toLocaleString()}</CardContent>
+      </Card>
     </div>
   );
 }

@@ -1,9 +1,9 @@
 import { AxiosError } from 'axios';
-import { api } from '../axios.config';
+import { api, BASE_URL } from '../axios.config';
 
 const login = async (email: string, password: string) => {
   try {
-    const response = await api.post('/auth/login', { email, password });
+    const response = await api.post(`${BASE_URL.AUTH}/auth/login`, { email, password });
     return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
@@ -19,4 +19,8 @@ const login = async (email: string, password: string) => {
   }
 };
 
-export { login };
+const redirectLogin = () => {
+  window.location.href = '/login';
+};
+
+export { login, redirectLogin };

@@ -1,13 +1,14 @@
-import { createCookieSessionStorage } from '@remix-run/node';
+import { createCookie } from '@remix-run/node';
+import * as cookie from 'cookie';
 
-export const { getSession, commitSession, destroySession } = createCookieSessionStorage({
-  cookie: {
-    name: 'Authentication',
-    secrets: ['some_secret'],
-    sameSite: 'lax',
-    path: '/',
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 60 * 60,
-  },
+export const authCookie = createCookie('Authentication', {
+  httpOnly: true,
+  sameSite: 'lax',
+  path: '/',
+  secure: process.env.NODE_ENV === 'production',
+  maxAge: 60 * 60,
 });
+
+export const parseCookie = (cookieValue: string) => {
+  return cookie.parse(cookieValue);
+};

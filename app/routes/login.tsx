@@ -9,19 +9,17 @@ import { Button } from '~/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
 import { login } from '~/services';
-import { commitSession, getSession } from '~/session';
+import { parseCookie } from '~/session';
 import { useUser } from '~/store';
 import { User } from '~/types';
 
 export async function loader({ request }: { request: Request }) {
   const cookieHeader = request.headers.get('Cookie');
-  const session = await getSession(cookieHeader);
+  const cookie = parseCookie(cookieHeader || '');
 
-  if (session.data.Authentication) {
-    return redirect('/dashboard');
-  }
+  if (!cookieHeader || !cookie.Authentication) return null;
 
-  return null;
+  return redirect('/dashboard');
 }
 
 const formSchema = z.object({
@@ -34,20 +32,19 @@ export async function action({ request }: ActionFunctionArgs) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
   const response = await login(email, password);
-  const { token, user } = response;
+  const { token } = response;
 
   if (!token) {
     return { error: 'Login failed' };
   }
 
-  const session = await getSession();
-  session.set('Authentication', token);
+  const setCookieHeader = `Authentication=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=3600; Secure=true`;
 
-  return Response.json({ user }, { headers: { 'Set-Cookie': await commitSession(session) } });
+  return Response.json({ response }, { headers: { 'Set-Cookie': setCookieHeader } });
 }
 
 export default function Login() {
-  const { setUser } = useUser();
+  const { setUser, setToken } = useUser();
 
   const fetcher = useFetcher({
     key: 'login',
@@ -55,10 +52,16 @@ export default function Login() {
 
   useEffect(() => {
     if (fetcher.state === 'loading' && fetcher.data) {
-      const data = fetcher.data as { user: User };
-      setUser(data.user);
+      const data = fetcher.data as {
+        response: {
+          user: User;
+          token: string;
+        };
+      };
+      setUser(data.response.user);
+      setToken(data.response.token);
     }
-  }, [fetcher.state, setUser, fetcher.data]);
+  }, [fetcher.state, setUser, fetcher.data, setToken]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

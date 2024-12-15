@@ -1,4 +1,5 @@
 import { Link, useLocation } from '@remix-run/react';
+import { Fragment } from 'react/jsx-runtime';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -31,16 +32,18 @@ export function DashboardBreadcrumb() {
     <Breadcrumb>
       <BreadcrumbList>
         {breadcrumbItems.map((item, index) => (
-          <BreadcrumbItem key={item.url}>
-            {index !== breadcrumbItems.length - 1 ? (
-              <BreadcrumbLink asChild>
-                <Link to={item.url}>{item.title}</Link>
-              </BreadcrumbLink>
-            ) : (
-              <BreadcrumbPage>{item.title}</BreadcrumbPage>
-            )}
+          <Fragment key={item.url}>
+            <BreadcrumbItem key={item.url}>
+              {index !== breadcrumbItems.length - 1 ? (
+                <BreadcrumbLink asChild>
+                  <Link to={item.url}>{item.title}</Link>
+                </BreadcrumbLink>
+              ) : (
+                <BreadcrumbPage>{item.title}</BreadcrumbPage>
+              )}
+            </BreadcrumbItem>
             {index < breadcrumbItems.length - 1 && <BreadcrumbSeparator />}
-          </BreadcrumbItem>
+          </Fragment>
         ))}
       </BreadcrumbList>
     </Breadcrumb>

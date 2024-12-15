@@ -1,4 +1,5 @@
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
+import { useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import {
   Pagination,
@@ -16,10 +17,23 @@ type TableWithPaginationProps<TData, TValue> = {
 };
 
 export default function TableWithPagination<TData, TValue>({ data, columns }: TableWithPaginationProps<TData, TValue>) {
+  const [pagination, setPagination] = useState<{
+    pageIndex: number;
+    pageSize: number;
+  }>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination,
+    state: {
+      pagination,
+    },
   });
 
   return (
@@ -31,7 +45,7 @@ export default function TableWithPagination<TData, TValue>({ data, columns }: Ta
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="py-2">
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   );
@@ -51,7 +65,7 @@ export default function TableWithPagination<TData, TValue>({ data, columns }: Ta
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                  Không có dữ liệu
                 </TableCell>
               </TableRow>
             )}
@@ -61,19 +75,20 @@ export default function TableWithPagination<TData, TValue>({ data, columns }: Ta
       <Pagination>
         <PaginationContent>
           <PaginationItem>
-            <PaginationPrevious href="#" />
+            <PaginationPrevious onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} />
           </PaginationItem>
-          {table.getPaginationRowModel().rows.map((row, index) => {
-            return (
-              <PaginationItem key={row.id}>
-                <PaginationLink href="#" isActive={row.getIsSelected()}>
-                  {index + 1}
-                </PaginationLink>
-              </PaginationItem>
-            );
-          })}
+          {new Array(table.getPageCount()).fill(0).map((_, index) => (
+            <PaginationItem key={index}>
+              <PaginationLink
+                isActive={index === table.getState().pagination.pageIndex}
+                onClick={() => table.setPageIndex(index)}
+              >
+                {index + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
           <PaginationItem>
-            <PaginationNext href="#" />
+            <PaginationNext onClick={() => table.nextPage()} disabled={!table.getCanNextPage()} />
           </PaginationItem>
         </PaginationContent>
       </Pagination>

@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { cn } from '~/lib/utils';
-import { ButtonProps, buttonVariants } from '~/components/ui/button';
 import { ChevronLeftIcon, ChevronRightIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
+import * as React from 'react';
+import { Button, ButtonProps, buttonVariants } from '~/components/ui/button';
+import { cn } from '~/lib/utils';
 
 const Pagination = ({ className, ...props }: React.ComponentProps<'nav'>) => (
   <nav
@@ -28,12 +28,13 @@ PaginationItem.displayName = 'PaginationItem';
 type PaginationLinkProps = {
   isActive?: boolean;
 } & Pick<ButtonProps, 'size'> &
-  React.ComponentProps<'a'>;
+  React.ComponentProps<'button'>;
 
 const PaginationLink = ({ className, isActive, size = 'icon', ...props }: PaginationLinkProps) => (
-  <a
+  <Button
     aria-current={isActive ? 'page' : undefined}
     className={cn(
+      'bg-white text-neutral-900 shadow-none dark:bg-neutral-950 dark:text-neutral-50',
       buttonVariants({
         variant: isActive ? 'outline' : 'ghost',
         size,
@@ -72,9 +73,9 @@ PaginationEllipsis.displayName = 'PaginationEllipsis';
 export {
   Pagination,
   PaginationContent,
-  PaginationLink,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationNext,
   PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
 };

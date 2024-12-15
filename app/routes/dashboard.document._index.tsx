@@ -3,16 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
 import { TablePagination } from '~/components';
+import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
 import { Input } from '~/components/ui/input';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '~/components/ui/tooltip';
 import { getDocuments } from '~/services/document';
 import { Document } from '~/types';
 
@@ -36,7 +30,7 @@ export default function DashboardDocument() {
     if (data) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newMapData = data.map(({ metadata, ...rest }: { metadata: any; rest: any }) => ({ ...rest, ...metadata }));
-      setDocuments(newMapData);
+      setDocuments([...newMapData]);
     }
   }, [data]);
 
@@ -45,7 +39,18 @@ export default function DashboardDocument() {
       header: 'Tên tài liệu',
       accessorKey: 'title',
       cell: ({ row }) => {
-        return <div className="line-clamp-1 max-w-[120px] text-left">{row.getValue('title')}</div>;
+        return (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <p className="line-clamp-1 max-w-[180px] text-left">{row.getValue('title')}</p>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{row.getValue('title')}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
       },
     },
     {
@@ -68,18 +73,33 @@ export default function DashboardDocument() {
       cell: ({ row }) => {
         return (
           <div className="min-w-[120px] text-left">
-            {row.getValue('isActive') ? 'Đang hoạt động' : 'Ngưng hoạt động'}
+            {row.getValue('isActive') ? (
+              <Badge variant={'active'}>Hoạt động</Badge>
+            ) : (
+              <Badge variant={'inactive'}>Ngưng hoạt động</Badge>
+            )}
           </div>
         );
       },
     },
     {
-      header: 'Ngày cập nhật gần nhất',
+      header: () => (
+        <p>
+          Ngày cập nhật <br /> gần nhất
+        </p>
+      ),
       accessorKey: 'updatedAt',
       cell: ({ row }) => {
-        const formattedDate = new Date(row.getValue('updatedAt')).toLocaleDateString('vi-VN');
+        const formattedDate = new Date(row.getValue('updatedAt')).toLocaleDateString('vi-VN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        });
 
-        return <div className="min-w-[120px] text-left">{formattedDate}</div>;
+        return <div className="text-left">{formattedDate}</div>;
       },
     },
     {
@@ -110,22 +130,7 @@ export default function DashboardDocument() {
     <div className="container mx-auto space-y-4">
       <h1 className="text-3xl font-semibold">Danh sách tài liệu</h1>
       <div className="flex items-center justify-between">
-        <Input placeholder="Filter emails..." className="max-w-sm" />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Dropdown
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Billing</DropdownMenuItem>
-            <DropdownMenuItem>Team</DropdownMenuItem>
-            <DropdownMenuItem>Subscription</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Input placeholder="Tìm kiếm tài liệu" className="max-w-sm" />
       </div>
       <TablePagination columns={columns} data={documents} />
     </div>

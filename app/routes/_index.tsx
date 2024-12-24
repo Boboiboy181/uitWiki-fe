@@ -26,7 +26,8 @@ export default function Index() {
     queryKey: [sessionId],
     queryFn: () => getSessionById(sessionId),
     enabled: !!sessionId,
-    select: (data) => data.messages,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    select: (data: any) => data.messages,
   });
 
   useEffect(() => {

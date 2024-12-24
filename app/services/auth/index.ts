@@ -1,9 +1,9 @@
 import { AxiosError } from 'axios';
-import { api, BASE_URL } from '../axios.config';
+import { api } from '../axios.config';
 
 const login = async (email: string, password: string) => {
   try {
-    const response = await api.post(`${BASE_URL.AUTH}/auth/login`, { email, password });
+    const response = await api.post(`/auth/login`, { email, password });
     return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {

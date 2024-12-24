@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
-import { TablePagination } from '~/components';
+import { Loading, TablePagination } from '~/components';
 import { Badge } from '~/components/ui/badge';
 import { getSessions } from '~/services';
 import { MessageType, Session } from '~/types';
@@ -16,7 +16,7 @@ export type Payment = {
 export default function DashboardDocument() {
   const [sessions, setSessions] = useState<Session[]>([]);
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['session'],
     queryFn: () => getSessions(),
   });
@@ -93,9 +93,15 @@ export default function DashboardDocument() {
   ];
 
   return (
-    <div className="container mx-auto space-y-4">
+    <div className="container mx-auto h-full space-y-4">
       <h1 className="text-3xl font-semibold">Danh sách cuộc trò chuyện</h1>
-      <TablePagination columns={columns} data={sessions} />
+      {isLoading ? (
+        <div className="flex h-1/2 w-full items-center justify-center">
+          <Loading />
+        </div>
+      ) : (
+        <TablePagination columns={columns} data={sessions} />
+      )}
     </div>
   );
 }

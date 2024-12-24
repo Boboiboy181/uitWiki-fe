@@ -1,9 +1,21 @@
 import { Separator } from '@radix-ui/react-separator';
-import { redirect } from '@remix-run/node';
+import { MetaFunction, redirect } from '@remix-run/node';
 import { Outlet } from '@remix-run/react';
 import { DashboardBreadcrumb, DashboardSidebar } from '~/components';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '~/components/ui/sidebar';
+import { Toaster } from '~/components/ui/sonner';
 import { parseCookie } from '~/session';
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'UIT Wiki' },
+    {
+      name: 'description',
+      content:
+        'uitWiki is an interactive platform designed for UIT students, providing a comprehensive repository of university information, resources, and a chatbot for instant Q&A assistance.',
+    },
+  ];
+};
 
 export async function loader({ request }: { request: Request }) {
   const cookieHeader = request.headers.get('Cookie');
@@ -29,10 +41,11 @@ export default function Dashboard() {
             <DashboardBreadcrumb />
           </div>
         </header>
-        <div className="flex flex-1 flex-col p-4 pt-0">
+        <div className="flex h-full flex-1 flex-col p-4 pt-0">
           <Outlet />
         </div>
       </SidebarInset>
+      <Toaster position="top-center" richColors={true} />
     </SidebarProvider>
   );
 }

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ActionFunctionArgs } from '@remix-run/node';
+import { MetaFunction, type ActionFunctionArgs } from '@remix-run/node';
 import { redirect, useFetcher } from '@remix-run/react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -12,6 +12,17 @@ import { login } from '~/services';
 import { parseCookie } from '~/session';
 import { useUser } from '~/store';
 import { User } from '~/types';
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'UIT Wiki' },
+    {
+      name: 'description',
+      content:
+        'uitWiki is an interactive platform designed for UIT students, providing a comprehensive repository of university information, resources, and a chatbot for instant Q&A assistance.',
+    },
+  ];
+};
 
 export async function loader({ request }: { request: Request }) {
   const cookieHeader = request.headers.get('Cookie');
@@ -35,10 +46,10 @@ export async function action({ request }: ActionFunctionArgs) {
   const { token } = response;
 
   if (!token) {
-    return { error: 'Login failed' };
+    return redirect('/login');
   }
 
-  const setCookieHeader = `Authentication=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=3600; Secure=true`;
+  const setCookieHeader = `Authentication=${token}; Path=/; HttpOnly; SameSite=None; Max-Age=3600; Secure=true`;
 
   return Response.json({ response }, { headers: { 'Set-Cookie': setCookieHeader } });
 }

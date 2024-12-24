@@ -1,5 +1,5 @@
 import { redirectLogin } from '../auth';
-import { api, BASE_URL } from '../axios.config';
+import { api } from '../axios.config';
 
 const getNewSession = async () => {
   try {
@@ -21,7 +21,11 @@ const getSessionById = async (sessionId: string) => {
 
 const getSessions = async (size: number = 10, page: number = 0) => {
   try {
-    const response = await api.get(`${BASE_URL.API}/api/v1/get_sessions?size=${size}&page=${page}`);
+    const response = await api.get(`/api/v1/get_sessions?size=${size}&page=${page}`, {
+      headers: {
+        Authorization: `Bearer ${JSON.parse(localStorage.getItem('user')!).state.token}`,
+      },
+    });
 
     if (response.status === 401) {
       throw new Error('Unauthorized');

@@ -2,7 +2,7 @@ import { Link, useLocation } from '@remix-run/react';
 import { useQuery } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
-import { TablePagination } from '~/components';
+import { Loading, TablePagination } from '~/components';
 import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
@@ -21,9 +21,10 @@ export default function DashboardDocument() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const { pathname } = useLocation();
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['documents'],
     queryFn: () => getDocuments(),
+    refetchOnMount: true,
   });
 
   useEffect(() => {
@@ -127,12 +128,21 @@ export default function DashboardDocument() {
   ];
 
   return (
-    <div className="container mx-auto space-y-4">
+    <div className="container mx-auto h-full space-y-4">
       <h1 className="text-3xl font-semibold">Danh sách tài liệu</h1>
       <div className="flex items-center justify-between">
         <Input placeholder="Tìm kiếm tài liệu" className="max-w-sm" />
+        <Link to={`${pathname}/add`}>
+          <Button className="text-white">Thêm mới</Button>
+        </Link>
       </div>
-      <TablePagination columns={columns} data={documents} />
+      {isLoading ? (
+        <div className="flex h-1/2 w-full items-center justify-center">
+          <Loading />
+        </div>
+      ) : (
+        <TablePagination columns={columns} data={documents} />
+      )}
     </div>
   );
 }

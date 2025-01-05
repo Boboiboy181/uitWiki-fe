@@ -2,10 +2,12 @@ import PreDefinedItem from './pre-defined-item.component';
 
 export default function PreDefinedList() {
   return (
-    <div className="flex w-full items-center justify-center gap-2">
-      {predefinedQuestions.map((item, index) => (
-        <PreDefinedItem key={index} question={item.question} />
-      ))}
+    <div className="w-full overflow-x-auto">
+      <div className="flex w-fit items-center justify-center gap-2 overflow-x-auto">
+        {predefinedQuestions.map((item, index) => (
+          <PreDefinedItem key={index} question={item.question} />
+        ))}
+      </div>
     </div>
   );
 }

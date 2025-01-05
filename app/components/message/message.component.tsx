@@ -10,7 +10,13 @@ export default function Message({ message, typing = false }: { message?: Message
   const ContentComponent = message?.sender === 'user' ? 'p' : ReactMarkdown;
 
   return (
-    <div className={cn('flex items-start gap-2 py-3', message?.sender === 'user' && 'flex-row-reverse')}>
+    <div
+      className={cn(
+        'flex items-start gap-2 py-3',
+        message?.sender === 'user' && 'flex-row-reverse',
+        typing && 'items-center',
+      )}
+    >
       <Avatar>
         <AvatarImage
           src={

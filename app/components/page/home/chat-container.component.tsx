@@ -11,12 +11,10 @@ import { MessageType } from '~/types';
 
 export default function ChatContainer({ messages }: { messages: MessageType[] }) {
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { sessionId } = useSession();
-  const { addMessage } = useChat();
+  const { addMessage, isError, isLoading, setIsError, setIsLoading } = useChat();
 
   useEffect(() => {
     textareaRef.current?.focus();
@@ -34,6 +32,8 @@ export default function ChatContainer({ messages }: { messages: MessageType[] })
     textareaRef.current!.value = '';
 
     setIsLoading(true);
+
+    // return;
 
     try {
       const newMessageFromBot: MessageType = await sendMessage(input, sessionId, Date.now());
@@ -68,7 +68,9 @@ export default function ChatContainer({ messages }: { messages: MessageType[] })
   return (
     <Fragment>
       {messages.length === 0 ? (
-        <h1 className="mb-6 text-center text-4xl font-semibold text-gray-900">Tôi có thể giúp gì cho bạn?</h1>
+        <h1 className="mb-3 text-center text-2xl font-semibold text-gray-900 md:mb-6 md:text-2xl lg:text-4xl">
+          Mình có thể giúp gì cho bạn?
+        </h1>
       ) : (
         <MessagesContainer messages={messages} isLoading={isLoading} isError={isError} />
       )}
@@ -103,7 +105,9 @@ export default function ChatContainer({ messages }: { messages: MessageType[] })
         </div>
         <form
           onSubmit={(e) => handleOnSubmit(e)}
-          className={cn('mb-3 flex w-full flex-col gap-2 rounded-xl border p-2 px-3 pt-3 shadow-sm transition-all')}
+          className={cn(
+            'mb-1.5 flex w-full flex-col gap-2 rounded-xl border p-2 px-3 pt-3 shadow-sm transition-all md:mb-3',
+          )}
         >
           <Textarea
             ref={textareaRef}
@@ -122,7 +126,7 @@ export default function ChatContainer({ messages }: { messages: MessageType[] })
         </form>
         {messages.length === 0 && <PreDefinedList />}
         <p className="mt-1 py-2 text-center text-xs text-gray-500">
-          uitWiki có thể mắc lỗi. Vui lòng sử dụng một cách cẩn trọng.
+          UITWiki có thể mắc lỗi. Vui lòng sử dụng một cách cẩn trọng.
         </p>
       </div>
     </Fragment>

@@ -41,7 +41,7 @@ export default function Dashboard() {
             <DashboardBreadcrumb />
           </div>
         </header>
-        <div className="flex h-full flex-1 flex-col p-4 pt-0">
+        <div className="flex h-full flex-1 flex-col p-4 pt-0 text-gray-900">
           <Outlet />
         </div>
       </SidebarInset>

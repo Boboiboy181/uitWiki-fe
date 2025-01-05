@@ -43,7 +43,7 @@ export default function Index() {
   }, [data]);
 
   return (
-    <main className="mx-auto h-screen">
+    <main className="mx-auto h-screen p-4 pb-0 text-gray-900 md:p-0">
       <Header />
       <div
         className={cn('relative mx-auto flex h-full w-full flex-col items-center justify-center', {

@@ -19,7 +19,7 @@ export default function MessagesContainer({ messages, isLoading, isError }: Mess
 
   return (
     <div ref={messageContainerRef} className="flex w-full flex-grow justify-center overflow-y-auto scroll-smooth">
-      <div className="flex h-fit w-full max-w-3xl flex-col pb-10 pt-[60px]">
+      <div className="flex h-fit w-full max-w-3xl flex-col pb-5 pt-8 md:pb-10 md:pt-[60px]">
         {messages.map((message, index) => (
           <Message key={index} message={message} />
         ))}

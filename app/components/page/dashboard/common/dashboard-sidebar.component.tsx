@@ -1,8 +1,6 @@
-import { AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
-import { ChatBubbleIcon, FileIcon } from '@radix-ui/react-icons';
+import { ChatBubbleIcon, ExitIcon, FileIcon, UpdateIcon } from '@radix-ui/react-icons';
 import { Link, useLocation } from '@remix-run/react';
 import uitLogo from '~/assets/svg/logo-uit.svg';
-import { Avatar } from '~/components/ui/avatar';
 import {
   Sidebar,
   SidebarContent,
@@ -14,7 +12,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '~/components/ui/sidebar';
-import { useUser } from '~/store';
 
 const items = [
   {
@@ -27,11 +24,15 @@ const items = [
     url: '/dashboard/chat-history',
     icon: ChatBubbleIcon,
   },
+  {
+    title: 'Câu hỏi thường gặp',
+    url: '/dashboard/faq',
+    icon: UpdateIcon,
+  },
 ];
 
 export function DashboardSidebar() {
   const { pathname } = useLocation();
-  const { user } = useUser();
 
   return (
     <Sidebar collapsible="icon">
@@ -58,7 +59,7 @@ export function DashboardSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={item.url === pathname}>
+                  <SidebarMenuButton asChild isActive={item.url === pathname} tooltip={item.title}>
                     <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -73,22 +74,11 @@ export function DashboardSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <div className="flex h-full w-full items-center gap-2">
-                <Avatar className="h-full w-fit rounded-lg">
-                  <AvatarImage
-                    className="w-full max-w-12 rounded-lg"
-                    src={'https://github.com/shadcn.png'}
-                    alt={user.email}
-                  />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
-                <div className="flex w-full flex-col">
-                  <p className="font-semibold">{user.email}</p>
-                  <p>{user.roles}</p>
-                </div>
-              </div>
-            </SidebarMenuButton>
+            <form method="post" action="/logout">
+              <SidebarMenuButton tooltip={'Đăng xuất'} className="w-fit hover:bg-red-500 hover:text-white">
+                <ExitIcon />
+              </SidebarMenuButton>
+            </form>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

@@ -55,7 +55,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Login() {
-  const { setUser, setToken } = useUser();
+  const { setUser } = useUser();
 
   const fetcher = useFetcher({
     key: 'login',
@@ -70,9 +70,8 @@ export default function Login() {
         };
       };
       setUser(data.response.user);
-      setToken(data.response.token);
     }
-  }, [fetcher.state, setUser, fetcher.data, setToken]);
+  }, [fetcher.state, setUser, fetcher.data]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -99,7 +98,7 @@ export default function Login() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input placeholder="example@gmail.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

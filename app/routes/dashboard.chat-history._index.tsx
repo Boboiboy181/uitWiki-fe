@@ -1,3 +1,4 @@
+import { Link, useLocation } from '@remix-run/react';
 import { useQuery } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
@@ -15,6 +16,7 @@ export type Payment = {
 
 export default function DashboardDocument() {
   const [sessions, setSessions] = useState<Session[]>([]);
+  const { pathname } = useLocation();
 
   const { data, isLoading } = useQuery({
     queryKey: ['session'],
@@ -32,7 +34,13 @@ export default function DashboardDocument() {
       header: 'Mã cuộc trò chuyện',
       accessorKey: 'sessionId',
       cell: ({ row }) => {
-        return <div className="line-clamp-1 w-fit text-left">{row.getValue('sessionId')}</div>;
+        const sessionId: string = row.getValue('sessionId');
+
+        return (
+          <Link to={`${pathname}/${sessionId}`} className="hover:text-blue-600">
+            <p className="line-clamp-1 w-fit text-left">{sessionId}</p>
+          </Link>
+        );
       },
     },
     {

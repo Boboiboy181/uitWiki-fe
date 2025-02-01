@@ -1,7 +1,7 @@
 import type { MetaFunction } from '@remix-run/node';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { ChatContainer, Header, Loading } from '~/components';
+import { ChatContainer, Header, Loading, VisitorWarning } from '~/components';
 import { cn } from '~/lib/utils';
 import { getSessionById } from '~/services';
 import { useSession } from '~/store';
@@ -44,6 +44,7 @@ export default function Index() {
 
   return (
     <main className="mx-auto h-screen p-4 pb-0 text-gray-900 md:p-0">
+      <VisitorWarning />
       <Header />
       <div
         className={cn('relative mx-auto flex h-full w-full flex-col items-center justify-center', {

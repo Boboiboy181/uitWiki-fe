@@ -19,7 +19,7 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   const { messages, setMessages } = useChat();
-  const { sessionId, getNewSessionId, hasHydrated } = useSession();
+  const { sessionId, hasHydrated, getNewSessionId } = useSession();
   const { messages: data, isLoading } = useSessionId(sessionId!);
 
   useEffect(() => {
@@ -29,8 +29,8 @@ export default function Index() {
   }, [getNewSessionId, hasHydrated, sessionId]);
 
   useEffect(() => {
-    if (!isLoading) setMessages(data || []);
-  }, [data, isLoading, setMessages]);
+    if (!isLoading && sessionId) setMessages(data || []);
+  }, [data, isLoading, sessionId, setMessages]);
 
   return (
     <main className="mx-auto h-screen p-4 pb-0 text-gray-900 md:p-0">

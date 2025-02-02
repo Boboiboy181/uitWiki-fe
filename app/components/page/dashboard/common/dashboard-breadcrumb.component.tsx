@@ -16,6 +16,7 @@ export function DashboardBreadcrumb() {
     '/dashboard': 'Trang chủ',
     '/dashboard/document': 'Tài liệu',
     '/dashboard/chat-history': 'Lịch sử chat',
+    '/dashboard/faq': 'Câu hỏi thường gặp',
   };
 
   const pathSegments = pathname.split('/').filter(Boolean);

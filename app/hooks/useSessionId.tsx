@@ -2,9 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import { getSessionById } from '~/services';
 import { MessageType } from '~/types';
 
-interface SessionResponse {
+type SessionResponse = {
   messages: MessageType[];
-}
+};
 
 export const useSessionId = (sessionId: string) => {
   const { data, isLoading } = useQuery({

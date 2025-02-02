@@ -55,7 +55,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Login() {
-  const { setUser } = useUser();
+  const { setUser, setToken } = useUser();
 
   const fetcher = useFetcher({
     key: 'login',
@@ -70,8 +70,9 @@ export default function Login() {
         };
       };
       setUser(data.response.user);
+      setToken(data.response.token);
     }
-  }, [fetcher.state, setUser, fetcher.data]);
+  }, [fetcher.state, fetcher.data, setUser, setToken]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

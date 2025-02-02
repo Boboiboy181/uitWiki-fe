@@ -1,9 +1,8 @@
 import type { MetaFunction } from '@remix-run/node';
-import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { ChatContainer, Header, Loading } from '~/components';
+import { ChatContainer, Header, Loading, VisitorWarning } from '~/components';
+import { useSessionId } from '~/hooks';
 import { cn } from '~/lib/utils';
-import { getSessionById } from '~/services';
 import { useSession } from '~/store';
 import { useChat } from '~/store/chat.store';
 
@@ -21,29 +20,21 @@ export const meta: MetaFunction = () => {
 export default function Index() {
   const { messages, setMessages } = useChat();
   const { sessionId, getNewSessionId, hasHydrated } = useSession();
-
-  const { data, isLoading } = useQuery({
-    queryKey: [sessionId],
-    queryFn: () => getSessionById(sessionId),
-    enabled: !!sessionId,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    select: (data: any) => data.messages,
-  });
+  const { messages: data, isLoading } = useSessionId(sessionId!);
 
   useEffect(() => {
     if (hasHydrated && !sessionId) {
       getNewSessionId();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasHydrated, sessionId]);
+  }, [getNewSessionId, hasHydrated, sessionId]);
 
   useEffect(() => {
-    setMessages(data || []);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+    if (!isLoading) setMessages(data || []);
+  }, [data, isLoading, setMessages]);
 
   return (
     <main className="mx-auto h-screen p-4 pb-0 text-gray-900 md:p-0">
+      <VisitorWarning />
       <Header />
       <div
         className={cn('relative mx-auto flex h-full w-full flex-col items-center justify-center', {

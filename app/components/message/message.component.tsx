@@ -4,8 +4,6 @@ import { cn } from '~/lib/utils';
 import { MessageType } from '~/types';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
-// trigger deploy
-
 export default function Message({ message, typing = false }: { message?: MessageType; typing?: boolean }) {
   const ContentComponent = message?.sender === 'user' ? 'p' : ReactMarkdown;
 

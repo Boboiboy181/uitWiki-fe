@@ -8,6 +8,33 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 const md = markdownit({ html: true, breaks: true });
 
 export default function Message({ message, typing = false }: { message?: MessageType; typing?: boolean }) {
+  // const [displayedHtml, setDisplayedHtml] = useState('');
+
+  // useEffect(() => {
+  //   if (message?.sender === 'bot' && message.content) {
+  //     const html = md.render(message.content);
+  //     const parser = new DOMParser();
+  //     const doc = parser.parseFromString(html, 'text/html');
+  //     const textContent = doc.body.textContent || '';
+  //     let index = 0;
+
+  //     const typeText = () => {
+  //       if (index < textContent.length) {
+  //         const partialText = textContent.slice(0, index + 5);
+  //         const renderedHtml = md.render(partialText);
+  //         setDisplayedHtml(renderedHtml);
+  //         index++;
+  //         setTimeout(typeText, 30);
+  //       }
+  //     };
+
+  //     setDisplayedHtml('');
+  //     typeText();
+  //   } else if (message?.content) {
+  //     setDisplayedHtml(md.render(message.content));
+  //   }
+  // }, [message]);
+
   return (
     <div
       className={cn(
@@ -42,7 +69,7 @@ export default function Message({ message, typing = false }: { message?: Message
             <p>{message.content}</p>
           ) : (
             <Fragment>
-              <div dangerouslySetInnerHTML={{ __html: md.render(message?.content || '') }}></div>
+              <div className="animate-in" dangerouslySetInnerHTML={{ __html: md.render(message?.content || '') }}></div>
               {/* <TypeAnimation sequence={[md.render(message?.content || '') || '']} speed={70} cursor={false} /> */}
             </Fragment>
           )}

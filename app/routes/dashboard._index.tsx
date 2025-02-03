@@ -1,7 +1,10 @@
 import { Overview } from '~/components';
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
+import { useIsClient } from '~/hooks';
 
 export default function DashboardIndex() {
+  const isClient = useIsClient();
+
   return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -107,7 +110,7 @@ export default function DashboardIndex() {
         <CardHeader>
           <CardTitle>Thời gian cập nhật mới nhất</CardTitle>
         </CardHeader>
-        <CardContent>Ngày {new Date().toLocaleString()}</CardContent>
+        <CardContent>Ngày {isClient ? new Date().toLocaleString() : ''}</CardContent>
       </Card>
     </div>
   );

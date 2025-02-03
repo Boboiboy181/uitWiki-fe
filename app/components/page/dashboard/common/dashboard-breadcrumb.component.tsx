@@ -15,6 +15,7 @@ export function DashboardBreadcrumb() {
   const pathTitles: Record<string, string> = {
     '/dashboard': 'Trang chủ',
     '/dashboard/document': 'Tài liệu',
+    '/dashboard/document/add': 'Thêm tài liệu',
     '/dashboard/chat-history': 'Lịch sử chat',
     '/dashboard/faq': 'Câu hỏi thường gặp',
   };

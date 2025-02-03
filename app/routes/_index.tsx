@@ -20,7 +20,7 @@ export const meta: MetaFunction = () => {
 export default function Index() {
   const { messages, setMessages } = useChat();
   const { sessionId, hasHydrated, getNewSessionId } = useSession();
-  const { messages: data, isLoading } = useSessionId(sessionId!);
+  const { messages: data, isLoading } = useSessionId(sessionId);
 
   useEffect(() => {
     if (hasHydrated && !sessionId) {
@@ -29,7 +29,7 @@ export default function Index() {
   }, [getNewSessionId, hasHydrated, sessionId]);
 
   useEffect(() => {
-    if (!isLoading && sessionId) setMessages(data || []);
+    if (!isLoading && sessionId && data.length > 0) setMessages(data);
   }, [data, isLoading, sessionId, setMessages]);
 
   return (

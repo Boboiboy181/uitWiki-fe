@@ -138,38 +138,42 @@ const DocumentDetailPage = () => {
                   <FormItem className="flex items-center gap-2 space-y-0">
                     <FormLabel>Trạng thái</FormLabel>
                     <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                      <Switch checked={field.value} defaultChecked={true} onCheckedChange={field.onChange} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <div className="flex items-center gap-2 text-sm">
-                <p className="font-semibold">Ngày tạo:</p>
-                <p>
-                  {new Date(document?.createdAt || new Date()).toLocaleDateString('vi-VN', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                  })}
-                </p>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <p className="font-semibold">Ngày cập nhật gần nhất:</p>
-                <p>
-                  {new Date(document?.updatedAt || new Date()).toLocaleDateString('vi-VN', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                  })}
-                </p>
-              </div>
+              {document?.createdAt && (
+                <div className="flex items-center gap-2 text-sm">
+                  <p className="font-semibold">Ngày tạo:</p>
+                  <p>
+                    {new Date(document?.updatedAt || new Date()).toLocaleDateString('vi-VN', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit',
+                    })}
+                  </p>
+                </div>
+              )}
+              {document?.updatedAt && (
+                <div className="flex items-center gap-2 text-sm">
+                  <p className="font-semibold">Ngày cập nhật gần nhất:</p>
+                  <p>
+                    {new Date(document?.updatedAt || new Date()).toLocaleDateString('vi-VN', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit',
+                    })}
+                  </p>
+                </div>
+              )}
 
               <div className="flex flex-1 items-end justify-between">
                 <Link to="/dashboard/document">

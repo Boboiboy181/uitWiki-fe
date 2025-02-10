@@ -3,7 +3,7 @@ import { api } from '../axios.config';
 
 const sendMessage = async (user_question: string, sessionId: string, timestamp: number) => {
   try {
-    const response = await api.post('/api/v1/send_message', { user_question, sessionId, timestamp });
+    const response = await api.post('/api/v1/chatbot/send_message', { user_question, sessionId, timestamp });
     return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {

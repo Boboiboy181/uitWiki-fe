@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 import { Loading, TablePagination } from '~/components';
 import {
@@ -105,7 +106,7 @@ export default function Index() {
 
   return (
     <div className="container mx-auto h-full space-y-4">
-      <h1 className="text-3xl font-semibold">Câu hỏi thường gặp</h1>
+      <h1 className="text-3xl font-semibold">Trả lời nhanh</h1>
       <div className="flex items-center justify-between">
         <Input placeholder="Tìm kiếm tài liệu" className="max-w-sm" />
         <CachedDetails
@@ -120,7 +121,7 @@ export default function Index() {
           <Loading />
         </div>
       ) : (
-        <TablePagination columns={columns} data={data!} />
+        <TablePagination columns={columns} data={data || []} />
       )}
     </div>
   );
@@ -158,6 +159,7 @@ function CachedDetails({ id, trigger }: { id?: string; trigger?: React.ReactNode
       queryClient.invalidateQueries({ queryKey: ['redis-keys'] });
       setIsOpen(false);
       form.reset();
+      toast.success('Thêm câu hỏi thành công');
     },
   });
 
@@ -166,6 +168,7 @@ function CachedDetails({ id, trigger }: { id?: string; trigger?: React.ReactNode
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['redis-keys'] });
       setIsOpen(false);
+      toast.success('Cập nhật câu hỏi thành công');
     },
   });
 
@@ -277,6 +280,10 @@ function DeleteAlert({ id, trigger }: { id: string; trigger?: React.ReactNode })
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['redis-keys'] });
       setIsOpen(false);
+      toast.success('Xóa câu hỏi thành công');
+    },
+    onError: () => {
+      toast.error('Xóa câu hỏi không thành công');
     },
   });
 

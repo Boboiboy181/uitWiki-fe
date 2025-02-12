@@ -25,7 +25,7 @@ const items = [
     icon: ChatBubbleIcon,
   },
   {
-    title: 'Câu hỏi thường gặp',
+    title: 'Trả lời nhanh',
     url: '/dashboard/faq',
     icon: UpdateIcon,
   },

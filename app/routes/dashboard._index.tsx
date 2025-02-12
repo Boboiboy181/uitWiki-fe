@@ -6,6 +6,16 @@ export default function DashboardIndex() {
   const isClient = useIsClient();
 
   return (
+    <div className="flex h-[calc(100vh-9rem)] flex-col items-center justify-center space-y-4">
+      <h1 className="text-4xl font-bold">Chào mừng đến với UIT Wiki</h1>
+      <p className="max-w-lg text-center text-lg text-muted-foreground">
+        Nền tảng toàn diện để quản lý và khám phá thông tin trường đại học. Bắt đầu bằng cách điều hướng qua menu bên
+        trái.
+      </p>
+    </div>
+  );
+
+  return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>

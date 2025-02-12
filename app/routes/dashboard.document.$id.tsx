@@ -1,11 +1,22 @@
 import { Link2Icon, UploadIcon } from '@radix-ui/react-icons';
 import { LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useNavigate, useParams } from '@remix-run/react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Fragment, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Loading } from '~/components';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '~/components/ui/alert-dialog';
 import { Button } from '~/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
@@ -22,7 +33,6 @@ const DocumentDetailPage = () => {
   const { id } = useParams();
   const [document, setDocument] = useState<DocumentType | null>(null);
   const [loadingIframe, setLoadingIframe] = useState(true);
-  const navigate = useNavigate();
 
   const { data } = useQuery({
     queryKey: ['document', id],
@@ -48,17 +58,6 @@ const DocumentDetailPage = () => {
 
   const handleLoadIframe = () => {
     setLoadingIframe(false);
-  };
-
-  const handleDelete = async () => {
-    if (!id) return;
-
-    try {
-      await deleteDocumentById(id);
-      navigate('/dashboard/document');
-    } catch (error) {
-      toast.error('Xóa không thành công');
-    }
   };
 
   return (
@@ -180,9 +179,14 @@ const DocumentDetailPage = () => {
                   <Button variant="outline">Quay trở lại</Button>
                 </Link>
                 <div className="flex gap-4">
-                  <Button variant="destructive" type="button" disabled={id === 'add'} onClick={() => handleDelete()}>
-                    Xóa
-                  </Button>
+                  <DeleteAlert
+                    id={id!}
+                    trigger={
+                      <Button variant="destructive" disabled={id === 'add'}>
+                        Xóa
+                      </Button>
+                    }
+                  />
                   <Button type="submit" disabled={id !== 'add'}>
                     Lưu
                   </Button>
@@ -213,5 +217,44 @@ const DocumentDetailPage = () => {
     </div>
   );
 };
+
+function DeleteAlert({ id, trigger }: { id: string; trigger?: React.ReactNode }) {
+  const queryClient = useQueryClient();
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const { mutate: deleteDoc, isPending } = useMutation({
+    mutationFn: () => deleteDocumentById(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['documents'] });
+      setIsOpen(false);
+      navigate('/dashboard/document');
+      toast.success('Xóa tài liệu thành công');
+    },
+    onError: () => {
+      toast.error('Xóa tài liệu không thành công');
+    },
+  });
+
+  return (
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+      <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Bạn có chắc chắn?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Hành động này không thể hoàn tác. Tài liệu này sẽ bị xóa vĩnh viễn khỏi hệ thống.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Hủy</AlertDialogCancel>
+          <AlertDialogAction onClick={() => deleteDoc()} disabled={isPending}>
+            {isPending ? 'Đang xóa...' : 'Xóa'}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
 
 export default DocumentDetailPage;

@@ -3,6 +3,7 @@ import { MetaFunction, type ActionFunctionArgs } from '@remix-run/node';
 import { redirect, useFetcher } from '@remix-run/react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
@@ -71,8 +72,13 @@ export default function Login() {
       };
       setUser(data.response.user);
       setToken(data.response.token);
+      toast.success('Đăng nhập thành công');
     }
-  }, [fetcher.state, fetcher.data, setUser, setToken]);
+
+    if (fetcher.state === 'idle' && fetcher.data === undefined && fetcher.formData) {
+      toast.error('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.');
+    }
+  }, [fetcher.state, fetcher.data, fetcher.formData, setUser, setToken]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -89,7 +95,7 @@ export default function Login() {
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       <div className="mb-10 flex w-[350px] flex-col items-center justify-center gap-4">
-        <h1 className="text-center text-3xl font-semibold">Welcome Back</h1>
+        <h1 className="text-center text-3xl font-semibold">Chào mừng quay trở lại</h1>
         <Form {...form}>
           <fetcher.Form method="post" action="/login" className="flex w-full flex-col gap-3">
             <FormField
@@ -110,9 +116,9 @@ export default function Login() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Mật khẩu</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="password" {...field} autoComplete="current-password" />
+                    <Input type="password" placeholder="veryverysecret" {...field} autoComplete="current-password" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -125,7 +131,7 @@ export default function Login() {
         </Form>
       </div>
       <p className="absolute bottom-4 text-sm">
-        If you have any problem, please contact us at{' '}
+        Nếu gặp sự cố, liên hệ với chúng mình tại{' '}
         <a href="mailto:uitwiki@gmail.com" className="text-primary underline">
           uitwiki@gmail.com
         </a>

@@ -3,6 +3,7 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/reac
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { NuqsAdapter } from 'nuqs/adapters/remix';
 import { useState } from 'react';
+import { Toaster } from 'sonner';
 import './tailwind.css';
 
 export const links: LinksFunction = () => [
@@ -63,6 +64,7 @@ export default function App() {
     <NuqsAdapter>
       <QueryClientProvider client={queryClient}>
         <Outlet />
+        <Toaster position="top-center" richColors />
       </QueryClientProvider>
     </NuqsAdapter>
   );

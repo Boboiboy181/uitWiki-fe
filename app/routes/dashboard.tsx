@@ -3,7 +3,6 @@ import { MetaFunction, redirect } from '@remix-run/node';
 import { Outlet } from '@remix-run/react';
 import { DashboardBreadcrumb, DashboardSidebar } from '~/components';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '~/components/ui/sidebar';
-import { Toaster } from '~/components/ui/sonner';
 import { parseCookie } from '~/session';
 
 export const meta: MetaFunction = () => {
@@ -45,7 +44,6 @@ export default function Dashboard() {
           <Outlet />
         </div>
       </SidebarInset>
-      <Toaster position="top-center" richColors={true} />
     </SidebarProvider>
   );
 }

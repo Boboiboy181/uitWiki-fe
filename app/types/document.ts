@@ -5,11 +5,14 @@ export type Document = {
   author: string;
   description: string;
   title: string;
-  publicdate: string;
+  publicdate: Date;
+  originalUrl?: string;
   createdAt: string;
   updatedAt: string;
   isDeleted?: boolean;
   isActive?: boolean;
+  parseType: 'ocr' | 'llama';
+  file?: File;
 };
 
 export type DocumentResponse = {

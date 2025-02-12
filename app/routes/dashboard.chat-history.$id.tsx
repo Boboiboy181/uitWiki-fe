@@ -14,9 +14,9 @@ const ChatHistoryDetailPage = () => {
   useEffect(() => {
     if (!isLoading && (!messages || messages.length === 0)) {
       Swal.fire({
-        title: MESSAGES.notFoundChatHistory.title,
-        text: MESSAGES.notFoundChatHistory.text,
-        icon: 'error',
+        title: messages.length !== 0 ? MESSAGES.notFoundChatHistory.title : 'Thông báo',
+        text: messages.length !== 0 ? MESSAGES.notFoundChatHistory.text : 'Không có lịch sử cuộc trò chuyện',
+        icon: messages.length !== 0 ? 'error' : 'info',
         confirmButtonText: MESSAGES.notFoundChatHistory.confirmText,
         confirmButtonColor: MESSAGES.notFoundChatHistory.confirmColor,
       }).then(() => {

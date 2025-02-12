@@ -1,4 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
+import { format } from 'date-fns';
+import { vi } from 'date-fns/locale';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -6,11 +8,5 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatTime(timestamp: string | Date | number) {
-  return new Date(timestamp).toLocaleString('vi-VN', {
-    hour: '2-digit',
-    minute: '2-digit',
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
+  return format(new Date(timestamp), 'dd/MM/yyyy HH:mm', { locale: vi });
 }

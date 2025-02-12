@@ -60,7 +60,7 @@ export default function Index() {
       header: 'Ngày tạo',
       accessorKey: 'created_at',
       cell: ({ row }) => {
-        const formattedDate = formatTime(row.getValue('created_at'));
+        const formattedDate = formatTime(row.getValue('created_at') || new Date());
 
         return <div className="text-left">{formattedDate}</div>;
       },
@@ -69,7 +69,7 @@ export default function Index() {
       header: 'Ngày cập nhật',
       accessorKey: 'updated_at',
       cell: ({ row }) => {
-        const formattedDate = formatTime(row.getValue('updated_at'));
+        const formattedDate = formatTime(row.getValue('updated_at') || new Date());
 
         return <div className="text-left">{formattedDate}</div>;
       },

@@ -7,6 +7,7 @@ import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '~/components/ui/tooltip';
+import { formatTime } from '~/lib/utils';
 import { getDocuments } from '~/services/document';
 import { Document } from '~/types';
 
@@ -65,7 +66,7 @@ export default function DashboardDocument() {
       header: 'Ngày xuất bản',
       accessorKey: 'publicdate',
       cell: ({ row }) => {
-        return <div className="min-w-[120px] text-left">{row.getValue('publicdate')}</div>;
+        return <div className="min-w-[120px] text-left">{formatTime(row.getValue('publicdate'))}</div>;
       },
     },
     {
@@ -91,16 +92,8 @@ export default function DashboardDocument() {
       ),
       accessorKey: 'updatedAt',
       cell: ({ row }) => {
-        const formattedDate = new Date(row.getValue('updatedAt')).toLocaleDateString('vi-VN', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        });
-
-        return <div className="text-left">{formattedDate}</div>;
+        const date = row.getValue('updatedAt') as string;
+        return <div className="text-left">{formatTime(date)}</div>;
       },
     },
     {

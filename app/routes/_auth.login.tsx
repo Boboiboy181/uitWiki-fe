@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MetaFunction, type ActionFunctionArgs } from '@remix-run/node';
-import { redirect, useFetcher } from '@remix-run/react';
+import { redirect, useFetcher, useSearchParams } from '@remix-run/react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -56,11 +56,23 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Login() {
+  const [searchParams] = useSearchParams();
   const { setUser, setToken } = useUser();
 
   const fetcher = useFetcher({
     key: 'login',
   });
+
+  useEffect(() => {
+    const logoutParam = searchParams.get('logout');
+    if (logoutParam === 'success') {
+      setTimeout(() => {
+        toast.success('Đăng xuất thành công', {
+          id: 'logout',
+        });
+      }, 100);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (fetcher.state === 'loading' && fetcher.data) {

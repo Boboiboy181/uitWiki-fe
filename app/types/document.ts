@@ -13,6 +13,7 @@ export type Document = {
   isActive?: boolean;
   parseType: 'ocr' | 'llama';
   file?: File;
+  version?: string;
 };
 
 export type DocumentResponse = {

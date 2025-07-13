@@ -2,9 +2,11 @@ import { vitePlugin as remix } from '@remix-run/dev';
 import { vercelPreset } from '@vercel/remix/vite';
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import devtoolsJson from 'vite-plugin-devtools-json';
 
 export default defineConfig({
   plugins: [
+    devtoolsJson(),
     remix({
       future: {
         v3_fetcherPersist: true,

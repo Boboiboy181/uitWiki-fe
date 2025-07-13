@@ -1,20 +1,18 @@
 import { ArrowUpIcon, ExclamationTriangleIcon, ReloadIcon } from '@radix-ui/react-icons';
-import { ChangeEvent, FormEvent, Fragment, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { type ChangeEvent, type FormEvent, Fragment, type KeyboardEvent, useEffect, useRef } from 'react';
 import { MessagesContainer, PreDefinedList } from '~/components';
 import { Button } from '~/components/ui/button';
 import { Textarea } from '~/components/ui/textarea';
 import { cn } from '~/lib/utils';
-import { sendMessage } from '~/services';
 import { useSession } from '~/store';
 import { useChat } from '~/store/chat.store';
-import { MessageType } from '~/types';
+import type { MessageType } from '~/types';
 
-export default function ChatContainer({ messages }: { messages: MessageType[] }) {
-  const [input, setInput] = useState('');
+export default function ChatContainer() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { sessionId } = useSession();
-  const { addMessage, isError, isLoading, setIsError, setIsLoading } = useChat();
+  const { addMessage, setIsError, updateMessage, isError, isLoading, messages } = useChat();
 
   useEffect(() => {
     textareaRef.current?.focus();
@@ -22,42 +20,94 @@ export default function ChatContainer({ messages }: { messages: MessageType[] })
 
   const handleOnSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const input = textareaRef.current?.value.trim() || '';
+
     const newMessageFromUser: MessageType = {
       content: input,
       sender: 'user',
       timestamp: Date.now(),
+      messageId: crypto.randomUUID(),
     };
+
     addMessage(newMessageFromUser);
-    setInput('');
-    textareaRef.current!.value = '';
-
-    setIsLoading(true);
-
-    // return;
+    if (textareaRef.current) {
+      textareaRef.current.value = '';
+    }
 
     try {
-      const newMessageFromBot: MessageType = await sendMessage(input, sessionId, Date.now());
-      addMessage(newMessageFromBot);
+      const queryParams = new URLSearchParams({
+        sessionId: sessionId,
+        user_question: input,
+        timestamp: Date.now().toString(),
+      });
+
+      const eventSource = new EventSource(
+        `http://localhost:3000/api/v1/chatbot/send_message_stream?${queryParams.toString()}`,
+      );
+
+      let streamedMessage = '';
+      const messageId = crypto.randomUUID();
+      const botResponse: MessageType = {
+        content: '',
+        sender: 'bot',
+        timestamp: Date.now(),
+        isLoading: true,
+        messageId,
+      };
+
+      addMessage(botResponse);
+
+      eventSource.onmessage = (event) => {
+        const data = event.data.trim();
+
+        if (data === '[DONE]') {
+          eventSource.close();
+          return;
+        }
+
+        streamedMessage += data;
+        updateMessage(messageId, {
+          ...botResponse,
+          content: streamedMessage,
+          isLoading: data === '',
+        });
+      };
+
+      eventSource.onerror = (err) => {
+        console.error('SSE Error:', err);
+        setIsError(true);
+        eventSource.close();
+      };
+
+      eventSource.onopen = () => {
+        console.log('SSE connection opened');
+      };
+
+      eventSource.addEventListener('end', () => {
+        eventSource.close();
+      });
     } catch (error) {
+      console.error(error);
       setIsError(true);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const handleOnChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(event.target.value);
     const textarea = event.target;
     textarea.style.height = 'auto';
     textarea.style.height = `${Math.min(textarea.scrollHeight, 300)}px`;
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (input.trim() === '' || isLoading) return;
+    if (textareaRef.current?.value.trim() === '' || isLoading) return;
 
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      handleOnSubmit(new Event('submit', { bubbles: true }) as unknown as FormEvent<HTMLFormElement>);
+      handleOnSubmit(
+        new Event('submit', {
+          bubbles: true,
+        }) as unknown as FormEvent<HTMLFormElement>,
+      );
     }
   };
 
@@ -72,7 +122,7 @@ export default function ChatContainer({ messages }: { messages: MessageType[] })
           Mình có thể giúp gì cho bạn?
         </h1>
       ) : (
-        <MessagesContainer messages={messages} isLoading={isLoading} isError={isError} />
+        <MessagesContainer messages={messages} />
       )}
 
       <div
@@ -114,10 +164,11 @@ export default function ChatContainer({ messages }: { messages: MessageType[] })
             onChange={(e) => handleOnChange(e)}
             onKeyDown={(e) => handleKeyDown(e)}
             placeholder="Nhập câu hỏi ở đây?"
-            className="max-h-[300px] min-h-[40px] resize-none overflow-auto border-none p-0 shadow-none outline-none focus-visible:ring-0"
+            className="max-h-[300px] min-h-[40px] resize-none overflow-auto rounded-none border-none p-0 shadow-none outline-none
+              focus-visible:ring-0"
           />
           <Button
-            disabled={input.trim() !== '' && isLoading === false && isError === false ? false : true}
+            disabled={!(textareaRef.current?.value.trim() !== '' && isLoading === false && isError === false)}
             type="submit"
             className="size-8 flex-grow-0 self-end rounded-lg p-2"
           >

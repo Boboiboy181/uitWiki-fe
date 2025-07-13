@@ -1,10 +1,11 @@
 import { create } from 'zustand';
-import { MessageType } from '~/types';
+import type { MessageType } from '~/types';
 
 type ChatState = {
   messages: MessageType[];
   setMessages: (messages: MessageType[]) => void;
   addMessage: (message: MessageType) => void;
+  updateMessage: (id: string, message: MessageType) => void;
   isLoading: boolean;
   isError: boolean;
   setIsLoading: (isLoading: boolean) => void;
@@ -15,6 +16,8 @@ const useChatStore = create<ChatState>()((set) => ({
   messages: [],
   setMessages: (messages: MessageType[]) => set({ messages }),
   addMessage: (message: MessageType) => set((state) => ({ messages: [...state.messages, message] })),
+  updateMessage: (id: string, message: MessageType) =>
+    set((state) => ({ messages: state.messages.map((m) => (m.messageId === id ? message : m)) })),
   isLoading: false,
   isError: false,
   setIsLoading: (isLoading: boolean) => set({ isLoading }),

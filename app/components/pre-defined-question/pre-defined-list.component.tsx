@@ -4,8 +4,8 @@ export default function PreDefinedList() {
   return (
     <div className="w-full overflow-x-auto">
       <div className="flex w-fit items-center justify-center gap-2 overflow-x-auto">
-        {predefinedQuestions.map((item, index) => (
-          <PreDefinedItem key={index} question={item.question} />
+        {predefinedQuestions.map((item) => (
+          <PreDefinedItem key={item.question} question={item.question} />
         ))}
       </div>
     </div>

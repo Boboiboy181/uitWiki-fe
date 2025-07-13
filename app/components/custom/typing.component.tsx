@@ -1,6 +1,14 @@
 export default function Typing() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      className="mt-2"
+    >
+      <title>Loading...</title>
       <style>
         {`
         .spinner {

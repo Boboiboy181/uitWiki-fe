@@ -64,6 +64,7 @@ const DocumentDetailPage = () => {
       file: undefined,
       originalUrl: '',
       parseType: 'ocr',
+      version: '',
     },
   });
 
@@ -124,6 +125,7 @@ const DocumentDetailPage = () => {
             description: data.description,
             originalUrl: data.originalUrl,
             publicdate: data.publicdate,
+            version: data.version,
           },
         };
 
@@ -200,6 +202,19 @@ const DocumentDetailPage = () => {
                     <FormLabel>Liên kết tới tài liệu gốc</FormLabel>
                     <FormControl>
                       <Input placeholder="Nhập link tài liệu" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="version"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phiên bản</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Nhập phiên bản tài liệu" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

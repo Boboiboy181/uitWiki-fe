@@ -41,7 +41,7 @@ export default function Index() {
           'justify-between overflow-y-hidden': messages.length !== 0,
         })}
       >
-        {isLoading ? <Loading /> : <ChatContainer messages={messages} />}
+        {isLoading ? <Loading /> : <ChatContainer />}
       </div>
     </main>
   );

@@ -16,7 +16,8 @@ const VisitorWarning = () => {
         allowOutsideClick: false,
         backdrop: true,
         customClass: {
-          popup: 'dark:bg-slate-800 dark:text-white',
+          container: '!rounded-lg',
+          popup: 'dark:!bg-slate-800 dark:!text-white rounded-lg',
           title: 'dark:text-white text-gray-900',
           htmlContainer: 'dark:text-gray-300 text-base text-gray-900',
         },

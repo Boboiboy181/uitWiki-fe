@@ -58,7 +58,7 @@ export default function ChatContainer() {
       addMessage(botResponse);
 
       eventSource.onmessage = (event) => {
-        const data = event.data.trim();
+        const data = event.data;
 
         if (data === '[DONE]') {
           eventSource.close();

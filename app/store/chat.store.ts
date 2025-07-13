@@ -10,6 +10,7 @@ type ChatState = {
   isError: boolean;
   setIsLoading: (isLoading: boolean) => void;
   setIsError: (isError: boolean) => void;
+  reset: () => void;
 };
 
 const useChatStore = create<ChatState>()((set) => ({
@@ -22,6 +23,7 @@ const useChatStore = create<ChatState>()((set) => ({
   isError: false,
   setIsLoading: (isLoading: boolean) => set({ isLoading }),
   setIsError: (isError: boolean) => set({ isError }),
+  reset: () => set({ messages: [], isLoading: false, isError: false }),
 }));
 
 export const useChat = () => useChatStore((state) => state);

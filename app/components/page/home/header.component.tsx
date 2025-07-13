@@ -3,13 +3,15 @@ import Swal from 'sweetalert2';
 import MESSAGES from '~/assets/message';
 import uitLogo from '~/assets/svg/logo-uit.svg';
 import { Button } from '~/components/ui/button';
-import { useSession } from '~/store';
+import { useChat, useSession } from '~/store';
 
 export default function Header() {
   const { setSessionId } = useSession();
+  const { reset } = useChat();
 
   const handleReload = () => {
     setSessionId('');
+    reset();
   };
 
   const handleShowInfo = () => {

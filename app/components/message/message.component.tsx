@@ -3,9 +3,10 @@ import { Typing } from '~/components/custom';
 import { cn } from '~/lib/utils';
 import type { MessageType } from '~/types';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
 
 export default function Message({ message, typing = false }: { message?: MessageType; typing?: boolean }) {
-  console.log('🚀 ~ Message ~ message:', message?.content);
   return (
     <div
       className={cn(
@@ -40,7 +41,7 @@ export default function Message({ message, typing = false }: { message?: Message
             {message?.sender === 'user' ? (
               <p>{message.content}</p>
             ) : (
-              <ReactMarkdown>{message?.content || ''}</ReactMarkdown>
+              <ReactMarkdown rehypePlugins={[rehypeRaw, rehypeSanitize]}>{message?.content || ''}</ReactMarkdown>
             )}
           </div>
         </div>

@@ -8,12 +8,22 @@ type MessagesContainerProps = {
 
 export default function MessagesContainer({ messages }: MessagesContainerProps) {
   const messageContainerRef = useRef<HTMLDivElement>(null);
+  const lastMessage = messages[messages.length - 1];
 
   useEffect(() => {
-    if (!messageContainerRef.current) return;
+    if (!lastMessage) return;
 
-    messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
-  }, []);
+    const timeoutId = setTimeout(() => {
+      if (messageContainerRef.current) {
+        messageContainerRef.current.scrollTo({
+          top: messageContainerRef.current.scrollHeight,
+          behavior: 'smooth',
+        });
+      }
+    }, 50);
+
+    return () => clearTimeout(timeoutId);
+  }, [lastMessage]);
 
   return (
     <div

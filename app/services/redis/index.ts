@@ -1,10 +1,10 @@
-import { RedisKey } from '~/types';
+import type { RedisKey } from '~/types';
 import { redirectLogin } from '../auth';
 import { api } from '../axios.config';
 
 const getAllCachedKeys = async () => {
   try {
-    const response = await api.get(`/api/v1/chatbot/redis?`, {
+    const response = await api.get(`/api/v1/chatbot/redis`, {
       headers: {
         Authorization: `Bearer ${JSON.parse(localStorage.getItem('user')!).state.token}`,
       },

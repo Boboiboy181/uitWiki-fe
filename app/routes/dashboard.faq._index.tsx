@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Pencil1Icon, TrashIcon } from '@radix-ui/react-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -32,7 +32,7 @@ import { Input } from '~/components/ui/input';
 import { useIsClient } from '~/hooks';
 import { formatTime } from '~/lib/utils';
 import { createCachedKey, deleteCachedKeyById, getAllCachedKeys, getCachedKeyById, updateCachedKey } from '~/services';
-import { RedisKey } from '~/types';
+import type { RedisKey } from '~/types';
 
 export default function Index() {
   const { data, isLoading } = useQuery({
@@ -83,7 +83,7 @@ export default function Index() {
         return (
           <div className="flex gap-2">
             <CachedDetails
-              id={key!}
+              id={key}
               trigger={
                 <Button>
                   <Pencil1Icon />
@@ -91,7 +91,7 @@ export default function Index() {
               }
             />
             <DeleteAlert
-              id={key!}
+              id={key || ''}
               trigger={
                 <Button variant={'destructive'}>
                   <TrashIcon />
@@ -148,7 +148,7 @@ function CachedDetails({ id, trigger }: { id?: string; trigger?: React.ReactNode
 
   const { data } = useQuery({
     queryKey: ['cached-item', id],
-    queryFn: () => getCachedKeyById(id!),
+    queryFn: () => getCachedKeyById(id || ''),
     enabled: !!id && isOpen,
     staleTime: 0,
   });

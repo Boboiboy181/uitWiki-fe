@@ -12,7 +12,7 @@ export default function ChatContainer() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { sessionId } = useSession();
-  const { addMessage, setIsError, updateMessage, isError, isLoading, messages } = useChat();
+  const { addMessage, setIsError, updateMessage, isError, isLoading, messages, setIsLoading } = useChat();
 
   useEffect(() => {
     textareaRef.current?.focus();
@@ -20,6 +20,7 @@ export default function ChatContainer() {
 
   const handleOnSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
     const input = textareaRef.current?.value.trim() || '';
 
     const newMessageFromUser: MessageType = {
@@ -62,6 +63,7 @@ export default function ChatContainer() {
 
         if (data === '[DONE]') {
           eventSource.close();
+          setIsLoading(false);
           return;
         }
 
@@ -89,6 +91,8 @@ export default function ChatContainer() {
     } catch (error) {
       console.error(error);
       setIsError(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -168,7 +172,7 @@ export default function ChatContainer() {
               focus-visible:ring-0"
           />
           <Button
-            disabled={!(textareaRef.current?.value.trim() !== '' && isLoading === false && isError === false)}
+            // disabled={!(textareaRef.current?.value.trim() !== '' && isLoading === false && isError === false)}
             type="submit"
             className="size-8 flex-grow-0 self-end rounded-lg p-2"
           >
